@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SOCNeon — Privacy-first SOC Log Analyzer. Analyze security logs 100% in your browser. MITRE ATT&CK mapping, IOC extraction, correlation engine." />
+  <meta name="theme-color" content="#050a13" />
+  <title>SOCNeon — Privacy-First SOC Log Analyzer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
+  <div class="spinner" aria-hidden="true"></div>
+  <p class="loading-msg" id="loading-msg">Processing…</p>
+</div>
+
+<!-- Error Toast -->
+<div class="error-toast" id="error-toast" role="alert" aria-live="assertive">
+  <span aria-hidden="true">⚠</span>
+  <span id="error-msg"></span>
+</div>
+
+<!-- Paste Modal -->
+<div class="modal" id="paste-modal" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title">
+  <div class="modal-box">
+    <h2 id="paste-modal-title">📋 Paste Log Content</h2>
+    <textarea class="paste-textarea" id="paste-area"
+      placeholder="Paste CSV, JSON, JSONL, or syslog text here…"
+      aria-label="Paste log content" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    <div class="modal-footer">
+      <button class="btn" id="paste-cancel">Cancel</button>
+      <button class="btn btn-primary" id="paste-confirm">Analyze ↵</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-wrapper">
+
+  <!-- Header -->
+  <header class="app-header" role="banner">
+    <div class="brand">
+      <img src="assets/logo.jpg" alt="SOCNeon shield" class="brand-logo" width="36" height="36"
+           onerror="this.style.display='none'" />
+      <div>
+        <div class="brand-title" aria-label="SOCNeon">SOCNeon</div>
+        <div class="brand-subtitle">SOC Log Analyzer</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="privacy-badge" title="Zero network requests. All analysis runs in your browser.">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        <span>100% Offline</span>
+      </div>
+      <button class="btn btn-sm btn-icon" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark">☀️</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ══ LANDING ══════════════════════════════════════════════════════════ -->
+    <section class="app-section active" id="section-landing" aria-labelledby="hero-heading">
+
+      <div class="landing-hero">
+        <h1 class="hero-title" id="hero-heading">SOCNeon</h1>
+        <p class="hero-sub">Privacy-first security log analysis, entirely in your browser.<br>No uploads. No accounts. No telemetry.</p>
+        <div class="hero-features" role="list">
+          <span class="feature-tag offline" role="listitem">⚡ Fully Offline</span>
+          <span class="feature-tag offline" role="listitem">📊 CSV · JSON · JSONL · Syslog</span>
+          <span class="feature-tag offline" role="listitem">🎯 22 Detection Rules</span>
+          <span class="feature-tag offline" role="listitem">🗺 MITRE ATT&amp;CK Mapping</span>
+          <span class="feature-tag offline" role="listitem">🔗 Correlation Engine</span>
+          <span class="feature-tag offline" role="listitem">💉 IOC Extraction</span>
+          <span class="feature-tag offline" role="listitem">⚙ Custom Rules Builder</span>
+          <span class="feature-tag offline" role="listitem">📄 HTML Report Export</span>
+          <span class="feature-tag future"  role="listitem" title="Requires backend">🔮 Future: Live Threat Intel</span>
+          <span class="feature-tag future"  role="listitem" title="Requires backend">🔮 Future: SIEM Push</span>
+        </div>
+      </div>
+
+      <div class="upload-area">
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
+             aria-label="Drop log file here or click to browse">
+          <div class="drop-icon" aria-hidden="true">🛡️</div>
+          <div class="drop-title">Drop your log file here</div>
+          <p class="drop-sub">or click to browse — your file never leaves this tab</p>
+          <div class="format-chips">
+            <span class="chip chip-csv">.csv</span>
+            <span class="chip chip-json">.json</span>
+            <span class="chip chip-jsonl">.jsonl / .ndjson</span>
+            <span class="chip chip-syslog">.log / syslog</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.75rem;flex-wrap:wrap">
+          <input type="file" id="file-input" accept=".csv,.json,.jsonl,.ndjson,.log,.txt,.syslog" style="display:none" aria-hidden="true" />
+          <button class="btn" id="paste-btn">📋 Paste Text</button>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2>— Try with demo data —</h2>
+        <div class="demo-buttons">
+          <button class="btn btn-sm" data-demo="csv"><span class="chip chip-csv" style="padding:.1rem .4rem;margin-right:.3rem">CSV</span>Firewall + Auth Logs</button>
+          <button class="btn btn-sm" data-demo="json"><span class="chip chip-json" style="padding:.1rem .4rem;margin-right:.3rem">JSON</span>ECS / Elastic Format</button>
+          <button class="btn btn-sm" data-demo="jsonl"><span class="chip chip-jsonl" style="padding:.1rem .4rem;margin-right:.3rem">JSONL</span>Web Access Logs</button>
+          <button class="btn btn-sm" data-demo="syslog"><span class="chip chip-syslog" style="padding:.1rem .4rem;margin-right:.3rem">SYSLOG</span>RFC 3164 Mixed</button>
+        </div>
+      </div>
+
+      <div class="feature-cards">
+        <div class="feat-card offline-card">
+          <div class="feat-icon">🔒</div>
+          <div class="feat-title">Privacy First</div>
+          <div class="feat-desc">Zero network requests. Works air-gapped. Source auditable on GitHub.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">⚡</div>
+          <div class="feat-title">Explainable Rules</div>
+          <div class="feat-desc">Every alert shows rule ID, confidence %, plain-English explanation, and evidence fields.</div>
+        </div>
+        <div class="feat-card mitre-card">
+          <div class="feat-icon">🗺</div>
+          <div class="feat-title">MITRE ATT&amp;CK</div>
+          <div class="feat-desc">Detected techniques mapped to ATT&amp;CK tactics — interactive clickable grid.</div>
+        </div>
+        <div class="feat-card corr-card">
+          <div class="feat-icon">🔗</div>
+          <div class="feat-title">Attack Chains</div>
+          <div class="feat-desc">Correlate events by source IP, identify kill chain progression across tactics.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔮</div>
+          <div class="feat-title">Future Backend</div>
+          <div class="feat-desc">Live threat intel, SIEM push, AI enrichment require a backend API — clearly marked.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══ DASHBOARD ═════════════════════════════════════════════════════════ -->
+    <section class="app-section" id="section-dashboard" aria-labelledby="dash-heading">
+      <h2 id="dash-heading" class="sr-only">Analysis Dashboard</h2>
+
+      <!-- Toolbar -->
+      <div class="dash-toolbar">
+        <div class="meta-bar">
+          <span class="meta-item">📁 <strong id="meta-filename">—</strong></span>
+          <span class="meta-item">Format: <strong id="meta-format">—</strong></span>
+          <span class="meta-item">Events: <strong id="meta-total">0</strong></span>
+          <span class="meta-item">Errors: <strong id="meta-errors">0</strong></span>
+        </div>
+        <button class="btn btn-sm" onclick="showSection('landing')">← New File</button>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid" role="list">
+        <div class="stat-card critical" role="listitem">
+          <div class="stat-number" id="stat-critical">0</div>
+          <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-card high" role="listitem">
+          <div class="stat-number" id="stat-high">0</div>
+          <div class="stat-label">High</div>
+        </div>
+        <div class="stat-card medium" role="listitem">
+          <div class="stat-number" id="stat-medium">0</div>
+          <div class="stat-label">Medium</div>
+        </div>
+        <div class="stat-card low" role="listitem">
+          <div class="stat-number" id="stat-low">0</div>
+          <div class="stat-label">Low</div>
+        </div>
+        <div class="stat-card events" role="listitem">
+          <div class="stat-number" id="stat-events">0</div>
+          <div class="stat-label">Events</div>
+        </div>
+        <div class="stat-card rules" role="listitem">
+          <div class="stat-number" id="stat-rules">0</div>
+          <div class="stat-label">Findings</div>
+        </div>
+        <div class="stat-card threat" role="listitem">
+          <div class="stat-number" id="stat-threat-score">—</div>
+          <div class="stat-label">Threat Score</div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem">
+        <div class="search-wrap" role="search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="search" class="search-input" id="search-input"
+            placeholder="Search (Ctrl+K)" aria-label="Advanced search" autocomplete="off" spellcheck="false" />
+          <span class="kbd-hint" aria-hidden="true">Ctrl+K</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <nav class="tabs-bar" role="tablist" aria-label="Dashboard sections">
+        <button class="tab-btn active" role="tab" data-tab="alerts"       aria-controls="tab-alerts"       aria-selected="true">🚨 Alerts</button>
+        <button class="tab-btn"        role="tab" data-tab="events"       aria-controls="tab-events"       aria-selected="false">📋 Events</button>
+        <button class="tab-btn"        role="tab" data-tab="summary"      aria-controls="tab-summary"      aria-selected="false">📊 Summary</button>
+        <button class="tab-btn"        role="tab" data-tab="timeline"     aria-controls="tab-timeline"     aria-selected="false">📈 Timeline</button>
+        <button class="tab-btn"        role="tab" data-tab="iocs"         aria-controls="tab-iocs"         aria-selected="false">💉 IOCs</button>
+        <button class="tab-btn"        role="tab" data-tab="mitre"        aria-controls="tab-mitre"        aria-selected="false">🗺 MITRE</button>
+        <button class="tab-btn"        role="tab" data-tab="correlations" aria-controls="tab-correlations" aria-selected="false">🔗 Chains</button>
+        <button class="tab-btn"        role="tab" data-tab="rules"        aria-controls="tab-rules"        aria-selected="false">⚙ Rules</button>
+        <button class="tab-btn"        role="tab" data-tab="report"       aria-controls="tab-report"       aria-selected="false">📄 Report</button>
+      </nav>
+
+      <!-- ── ALERTS ─────────────────────────────────────────────────────── -->
+      <div class="tab-panel active" id="tab-alerts" role="tabpanel">
+        <div class="sev-filters" role="group" aria-label="Filter by severity">
+          <button class="sev-btn active" data-sev="all">All <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="critical">🔴 Critical <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="high">🟠 High <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="medium">🟡 Medium <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="low">🔵 Low <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="info">⚪ Info <span class="badge">0</span></button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+          <span id="alerts-count" class="events-count">0 alerts</span>
+          <div class="export-group">
+            <button class="btn btn-sm" id="export-csv-alerts">⬇ CSV</button>
+            <button class="btn btn-sm" id="export-json-alerts">⬇ JSON</button>
+          </div>
+        </div>
+        <div id="alerts-list" aria-live="polite"></div>
+      </div>
+
+      <!-- ── EVENTS ─────────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-events" role="tabpanel">
+        <div class="events-toolbar">
+          <span id="events-count" class="events-count">0 events</span>
+          <div class="export-group">
+            <button class="btn btn-sm" id="export-csv-events">⬇ CSV</button>
+            <button class="btn btn-sm" id="export-json-events">⬇ JSON</button>
+          </div>
+        </div>
+        <div id="events-table-wrap" aria-live="polite"></div>
+        <nav id="pagination" class="pagination" aria-label="Events pagination"></nav>
+      </div>
+
+      <!-- ── SUMMARY ────────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-summary" role="tabpanel">
+        <div id="summary-content" aria-live="polite"></div>
+      </div>
+
+      <!-- ── TIMELINE ───────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-timeline" role="tabpanel">
+        <!-- rendered by renderTimeline() -->
+      </div>
+
+      <!-- ── IOCs ───────────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-iocs" role="tabpanel">
+        <!-- rendered by renderIOCs() -->
+      </div>
+
+      <!-- ── MITRE ──────────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-mitre" role="tabpanel">
+        <!-- rendered by renderMITRE() -->
+      </div>
+
+      <!-- ── CORRELATIONS ───────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-correlations" role="tabpanel">
+        <!-- rendered by renderCorrelations() -->
+      </div>
+
+      <!-- ── CUSTOM RULES ───────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-rules" role="tabpanel">
+        <!-- rendered by renderCustomRules() -->
+      </div>
+
+      <!-- ── REPORT ─────────────────────────────────────────────────────── -->
+      <div class="tab-panel" id="tab-report" role="tabpanel">
+        <!-- rendered by renderReport() -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <div><strong>SOCNeon</strong> &nbsp;·&nbsp; 100% client-side &nbsp;·&nbsp;
+      <span class="offline-badge">⚡ Offline-ready</span>
+    </div>
+    <div class="footer-links">
+      <span><kbd class="kbd">Ctrl+K</kbd> search &nbsp;<kbd class="kbd">Ctrl+O</kbd> open &nbsp;<kbd class="kbd">Esc</kbd> close</span>
+      <span style="color:var(--text-muted)">v2.0.0</span>
+    </div>
+  </footer>
+
+</div><!-- /app-wrapper -->
+
+<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+<script src="js/parser.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/advanced.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
