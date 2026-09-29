@@ -1180,3 +1180,107 @@ select.form-input option { background: var(--bg-card); }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ORIGINKIT-INSPIRED ANIMATED ELEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Ascii / Cyber Stream Background ─────────────────────────────────────── */
+.hero-stream-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; opacity: .45; z-index: 0;
+}
+.landing-nav, .landing-hero, .upload-section, .demo-section, .features-grid, .landing-footer {
+  position: relative; z-index: 1;
+}
+
+/* ─── Status Ticker ───────────────────────────────────────────────────────── */
+.status-ticker {
+  display: inline-flex; align-items: center; gap: .75rem;
+  font-family: var(--mono); font-size: .68rem; color: var(--gold);
+  padding: .35rem 1rem; border-radius: 99px;
+  background: rgba(201,165,90,.08); border: 1px solid rgba(201,165,90,.25);
+  margin-bottom: 2rem; box-shadow: 0 0 16px rgba(201,165,90,.08);
+}
+.ticker-item { display: inline-flex; align-items: center; gap: .4rem; }
+.ticker-sep { color: var(--border-light); }
+
+/* ─── Arrow Reveal Button (Originkit arrow-reveal-button) ─────────────────── */
+.btn-arrow-reveal {
+  position: relative; overflow: hidden;
+  padding-right: 2.4rem;
+}
+.btn-arrow-reveal .arrow-icon {
+  position: absolute; right: .85rem; top: 50%;
+  transform: translateY(-50%) translateX(0);
+  transition: transform .2s var(--ease);
+}
+.btn-arrow-reveal:hover .arrow-icon {
+  transform: translateY(-50%) translateX(4px);
+}
+
+/* ─── Beam Sweep Spotlight Cards (Originkit beam-sweep) ──────────────────── */
+.beam-card, .feat-card, .drop-zone, .sb-stat {
+  position: relative;
+}
+.beam-card::after, .feat-card::after, .drop-zone::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(201,165,90,.1), transparent 50%);
+  pointer-events: none; opacity: 0; transition: opacity .25s ease;
+  border-radius: inherit;
+}
+.beam-card:hover::after, .feat-card:hover::after, .drop-zone:hover::after {
+  opacity: 1;
+}
+
+/* ─── HUD Analyst Crosshair (Originkit axis-cursor) ───────────────────────── */
+.hud-crosshair {
+  position: fixed; pointer-events: none; z-index: 99999;
+  opacity: 0; transition: opacity .2s ease;
+  transform: translate3d(-999px, -999px, 0);
+}
+.hud-crosshair.active { opacity: 1; }
+.hud-coords {
+  font-family: var(--mono); font-size: .62rem;
+  color: var(--gold-bright); background: rgba(9,7,26,.92);
+  border: 1px solid var(--gold-dim); padding: .15rem .45rem;
+  border-radius: 4px; box-shadow: 0 0 14px rgba(201,165,90,.25);
+  letter-spacing: .06em;
+}
+
+/* ─── Interactive Threat Radar Component ──────────────────────────────────── */
+.radar-panel-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+  margin-bottom: 1.5rem; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.radar-panel-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .85rem; flex-wrap: wrap; gap: .5rem;
+}
+.radar-panel-title {
+  font-family: var(--mono); font-size: .78rem; text-transform: uppercase;
+  color: var(--gold); letter-spacing: .08em; display: flex; align-items: center; gap: .55rem;
+}
+.radar-pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--sage);
+  box-shadow: 0 0 8px var(--sage);
+  animation: pulse-ring 2s infinite;
+}
+.radar-canvas-wrap {
+  width: 100%; height: 320px; position: relative;
+  border-radius: var(--radius-sm); overflow: hidden;
+  background: #060412; border: 1px solid var(--border);
+}
+.radar-canvas-wrap canvas {
+  width: 100%; height: 100%; display: block;
+}
+.radar-hud-legend {
+  display: flex; gap: 1rem; align-items: center; margin-top: .75rem;
+  font-family: var(--mono); font-size: .68rem; color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.radar-hud-item { display: inline-flex; align-items: center; gap: .35rem; }
+.radar-blip-dot { width: 7px; height: 7px; border-radius: 50%; }
+

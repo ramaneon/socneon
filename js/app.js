@@ -35,12 +35,24 @@ function sanitize(s) {
                   .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+let heroRadar = null, dashRadar = null;
+
 /* ─── Boot ────────────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   State.customRules = SOCNeonAdvanced.loadCustomRules();
   initDropZone(); initDemoButtons(); initTabs(); initSearch();
   initSeverityFilter(); initExport(); initThemeToggle();
   initKeyboardShortcuts(); initCustomRuleBuilder(); animateHeader();
+
+  // Originkit visual components
+  if (window.SOCNeonVisuals) {
+    new SOCNeonVisuals.AsciiTelemetryStream('hero-stream-canvas');
+    heroRadar = new SOCNeonVisuals.ThreatRadar('hero-radar-canvas');
+    dashRadar = new SOCNeonVisuals.ThreatRadar('dash-radar-canvas');
+    new SOCNeonVisuals.HudCrosshair();
+    SOCNeonVisuals.initBeamSweeps();
+    SOCNeonVisuals.KineticScramble.attachAll();
+  }
 });
 
 function animateHeader() {
@@ -231,6 +243,11 @@ function renderDashboard(filename) {
   if (navIOCs && State.iocs) navIOCs.textContent = State.iocs.totalCount || 0;
   const navChains = $('nav-count-chains');
   if (navChains && State.correlations) navChains.textContent = State.correlations.length || 0;
+  const navRadar = $('nav-count-radar');
+  if (navRadar) navRadar.textContent = State.findings.length;
+
+  if (dashRadar) dashRadar.setFindings(State.findings);
+  if (heroRadar) heroRadar.setFindings(State.findings);
 
   updateSeverityBadges(sc.counts);
   renderCurrentTab();
@@ -239,6 +256,7 @@ function renderDashboard(filename) {
 function renderCurrentTab() {
   applyFilters();
   switch (State.activeTab) {
+    case 'radar':        renderRadar();        break;
     case 'alerts':       renderAlerts();       break;
     case 'events':       renderEvents();       break;
     case 'summary':      renderSummary();      break;
@@ -250,6 +268,47 @@ function renderCurrentTab() {
     case 'report':       renderReport();       break;
   }
 }
+
+function renderRadar() {
+  if (dashRadar) {
+    dashRadar.resize();
+    dashRadar.setFindings(State.findings);
+  }
+  const radarList = $('radar-threat-list');
+  if (!radarList) return;
+  const criticals = State.findings.filter(f => f.severity === 'critical' || f.severity === 'high');
+  radarList.innerHTML = (criticals.length ? criticals.slice(0, 8) : State.findings.slice(0, 8)).map(f => `
+    <div class="crule-item beam-card" style="cursor:pointer" onclick="filterByFindingId('${f.id}')">
+      <div class="crule-info">
+        <span class="sev-badge ${f.severity}">${f.severity.toUpperCase()}</span>
+        <strong style="color:var(--text-bright)">${sanitize(f.title)}</strong>
+        <span style="color:var(--text-muted);font-family:var(--mono);font-size:.7rem">${f.event?.src_ip || 'N/A'}</span>
+      </div>
+      <span class="badge" style="font-family:var(--mono)">${f.confidence}%</span>
+    </div>
+  `).join('') || '<p style="color:var(--text-muted);font-size:.8rem">No active threat vectors plotted.</p>';
+}
+
+window.filterByFindingId = function(id) {
+  const finding = State.findings.find(f => f.id === id);
+  if (finding) {
+    State.activeTab = 'alerts';
+    $$('.sb-nav-item, [data-tab]').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === 'alerts');
+      b.setAttribute('aria-selected', b.dataset.tab === 'alerts');
+    });
+    $$('.tab-panel').forEach(p => p.classList.remove('active'));
+    $('tab-alerts')?.classList.add('active');
+    $('search-input').value = finding.event?.src_ip || finding.ruleId || '';
+    State.searchQuery = $('search-input').value;
+    State.advancedFilter = SOCNeonAdvanced.buildSearchFilter(State.searchQuery);
+    applyFilters();
+    renderAlerts();
+  }
+};
+window.SOCNeonFilterByFinding = function(finding) {
+  if (finding) window.filterByFindingId(finding.id);
+};
 
 function updateSeverityBadges(counts) {
   $$('[data-sev]').forEach(btn => {
