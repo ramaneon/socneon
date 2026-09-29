@@ -42,10 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initSeverityFilter(); initExport(); initThemeToggle();
   initKeyboardShortcuts(); initCustomRuleBuilder(); animateHeader();
 
-  const fbBtn = $('header-feedback-btn');
-  if (fbBtn && window.SOCKillerFeatures) {
-    fbBtn.addEventListener('click', () => SOCKillerFeatures.openFeedbackModal());
-  }
+  ['header-feedback-btn', 'floating-feedback-btn'].forEach(id => {
+    const btn = $(id);
+    if (btn && window.SOCKillerFeatures) {
+      btn.addEventListener('click', () => SOCKillerFeatures.openFeedbackModal());
+    }
+  });
 });
 
 function animateHeader() {

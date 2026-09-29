@@ -1636,3 +1636,36 @@ canvas.chart { width: 100% !important; height: 100% !important; }
 @media (max-width: 400px) {
   .feature-cards { grid-template-columns: 1fr; }
 }
+
+/* ─── Floating Feedback Pill (OriginKit Style) ────────────────────────── */
+.floating-feedback-pill {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(14, 18, 28, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid #00e5ff;
+  border-radius: 100px;
+  padding: 0.5rem 1rem;
+  color: #00e5ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.25), 0 2px 8px rgba(0,0,0,0.6);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.floating-feedback-pill:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 28px rgba(0, 229, 255, 0.45);
+  background: rgba(0, 229, 255, 0.12);
+  border-color: #33ecff;
+  color: #fff;
+}
+.floating-feedback-pill:active {
+  transform: translateY(1px) scale(0.98);
+}
