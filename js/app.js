@@ -53,6 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
     SOCNeonVisuals.initBeamSweeps();
     SOCNeonVisuals.KineticScramble.attachAll();
   }
+
+  // MotionSites AI visual components (3D Sphere, Embers, Tilt)
+  if (window.SOCMotionVisuals) {
+    new SOCMotionVisuals.ParticleEmbers('hero-ember-canvas');
+    new SOCMotionVisuals.SecuritySphere3D('security-sphere-canvas');
+    SOCMotionVisuals.init3DCardTilt();
+  }
 });
 
 function animateHeader() {

@@ -45,19 +45,22 @@
 <div class="app-sections">
 
   <!-- ═══════════════════════════════════════════════════════════════════════
-       LANDING PAGE — Originkit Editorial Style with Animated Components
+       LANDING PAGE — MotionSites AI & Originkit Editorial Style
        ═══════════════════════════════════════════════════════════════════════ -->
   <section class="app-section active" id="section-landing" aria-labelledby="hero-heading">
     
     <!-- Cyber Stream Background Canvas (Originkit ascii-rain) -->
     <canvas id="hero-stream-canvas" class="hero-stream-canvas" aria-hidden="true"></canvas>
 
+    <!-- Ambient Glowing Ember Particles (MotionSites EMBER style) -->
+    <canvas id="hero-ember-canvas" class="hero-ember-canvas" aria-hidden="true"></canvas>
+
     <!-- Top Nav -->
     <nav class="landing-nav" role="navigation">
       <div class="nav-brand">
         <img src="assets/logo.jpg" alt="SOCNeon shield" class="nav-logo" onerror="this.style.display='none'" />
         <span class="nav-name" data-scramble="SOCNeon" data-scramble-hover>SOCNeon</span>
-        <span class="nav-badge">v2.1</span>
+        <span class="nav-badge">v2.2 · 3D AI HUD</span>
       </div>
       <div class="nav-links">
         <a href="https://github.com/ramaneon/socneon" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-ghost">GitHub</a>
@@ -72,9 +75,9 @@
       <div class="status-ticker">
         <span class="ticker-item"><span class="radar-pulse-dot"></span>ENGINE: 100% AIR-GAPPED</span>
         <span class="ticker-sep">/</span>
-        <span class="ticker-item">22 ATT&amp;CK RULES</span>
+        <span class="ticker-item">3D DEFENSE MESH ACTIVE</span>
         <span class="ticker-sep">/</span>
-        <span class="ticker-item">RADAR SCANNER ONLINE</span>
+        <span class="ticker-item">22 ATT&amp;CK RULES</span>
         <span class="ticker-sep">/</span>
         <span class="ticker-item">ZERO TELEMETRY</span>
       </div>
@@ -84,8 +87,8 @@
         Zero Uploads · Pure Browser Memory
       </div>
 
-      <!-- Kinetic Scramble Title -->
-      <h1 class="hero-title" id="hero-heading">
+      <!-- Kinetic Scramble Title with MotionSites Gradient -->
+      <h1 class="hero-title motionsites-headline" id="hero-heading">
         <span data-scramble="SOCNeon" data-scramble-hover>SOC<span class="accent">Neon</span></span>
       </h1>
       
@@ -95,18 +98,36 @@
 
       <div class="feature-pills" role="list">
         <span class="pill offline" role="listitem"><span class="pill-dot"></span>100% Offline</span>
+        <span class="pill active"  role="listitem"><span class="pill-dot"></span>3D Defense Mesh</span>
         <span class="pill active"  role="listitem"><span class="pill-dot"></span>Interactive Threat Radar</span>
         <span class="pill"         role="listitem"><span class="pill-dot"></span>22 Detection Rules</span>
         <span class="pill"         role="listitem"><span class="pill-dot"></span>MITRE ATT&amp;CK</span>
         <span class="pill"         role="listitem"><span class="pill-dot"></span>Attack Chains</span>
         <span class="pill"         role="listitem"><span class="pill-dot"></span>IOC Harvester</span>
-        <span class="pill"         role="listitem"><span class="pill-dot"></span>Custom Rules</span>
         <span class="pill"         role="listitem"><span class="pill-dot"></span>HTML Report</span>
         <span class="pill future"  role="listitem" title="Requires backend server"><span class="pill-dot"></span>Live Threat Intel (Future)</span>
       </div>
 
+      <!-- 3D Holographic Security Defense Globe (MotionSites AKOR / NOVA style) -->
+      <div class="sphere-hud-container interactive-hud-zone">
+        <div class="sphere-hud-frame tilt-card" title="Click and drag to rotate the 3D defense mesh">
+          <div class="sphere-hud-reticle" aria-hidden="true"></div>
+          <canvas id="security-sphere-canvas"></canvas>
+          <div class="sphere-hud-overlay">
+            <div class="sphere-hud-top">
+              <span>SYS://DEFENSE-MESH</span>
+              <span>3D TELEMETRY</span>
+            </div>
+            <div class="sphere-hud-bottom">
+              <span>NODE-STATUS: SECURE</span>
+              <span>DRAG TO ROTATE ↺</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Live Interactive Radar Preview (Originkit ascii-radar) -->
-      <div class="hero-radar-preview beam-card interactive-hud-zone" style="max-width:580px;width:100%;margin:0 auto 2.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow-lg);">
+      <div class="hero-radar-preview beam-card tilt-card interactive-hud-zone" style="max-width:580px;width:100%;margin:0 auto 2.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow-lg);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;font-family:var(--mono);font-size:.72rem;color:var(--gold)">
           <span>📡 SURVEILLANCE RADAR (LIVE)</span>
           <span style="color:var(--sage)">● SWEEP ACTIVE</span>
@@ -118,9 +139,9 @@
 
     </div>
 
-    <!-- Upload Box (Beam card with spotlight) -->
+    <!-- Upload Box (MotionSites Rotating Conic Border Beam Card) -->
     <div class="upload-section interactive-hud-zone">
-      <div class="drop-zone beam-card" id="drop-zone" role="button" tabindex="0"
+      <div class="drop-zone beam-card border-beam-card tilt-card" id="drop-zone" role="button" tabindex="0"
            aria-label="Drop log file here or click to browse">
         <div class="drop-icon" aria-hidden="true">🛡️</div>
         <div class="drop-title" data-scramble="Drop your log file here" data-scramble-hover>Drop your log file here</div>
@@ -498,6 +519,7 @@
 <script src="js/charts.js"></script>
 <script src="js/advanced.js"></script>
 <script src="js/originkit-components.js"></script>
+<script src="js/motionsites-components.js"></script>
 <script src="js/app.js"></script>
 
 <script>

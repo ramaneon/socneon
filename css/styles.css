@@ -1284,3 +1284,79 @@ select.form-input option { background: var(--bg-card); }
 .radar-hud-item { display: inline-flex; align-items: center; gap: .35rem; }
 .radar-blip-dot { width: 7px; height: 7px; border-radius: 50%; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOTIONSITES.AI DESIGN ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Ember Particle Canvas Background ────────────────────────────────────── */
+.hero-ember-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; opacity: .75; z-index: 0;
+}
+
+/* ─── MotionSites Gradient Headline ───────────────────────────────────────── */
+.motionsites-headline {
+  background: linear-gradient(135deg, #f5f1e8 0%, #e0b96a 45%, #a887e8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 30px rgba(201,165,90,.3));
+}
+
+/* ─── Rotating Conic Border Beam Card ─────────────────────────────────────── */
+@keyframes rotate-border {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.border-beam-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.border-beam-card::before {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(201,165,90,.6), rgba(139,111,212,.6), rgba(106,170,137,.6), rgba(201,165,90,.6));
+  background-size: 300% 300%;
+  animation: rotate-border 6s ease infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ─── 3D Holographic Security Sphere Frame (AKOR / NOVA style) ───────────── */
+.sphere-hud-container {
+  display: flex; justify-content: center; align-items: center;
+  margin: 1.5rem auto 2.5rem;
+}
+.sphere-hud-frame {
+  width: min(340px, 86vw); height: 340px;
+  position: relative; border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,111,212,.08) 0%, rgba(9,7,26,.8) 70%);
+  border: 1px solid rgba(201,165,90,.25);
+  box-shadow: 0 0 50px rgba(139,111,212,.18), inset 0 0 40px rgba(201,165,90,.08);
+  overflow: hidden;
+  cursor: grab;
+}
+.sphere-hud-frame:active { cursor: grabbing; }
+.sphere-hud-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: .85rem;
+  font-family: var(--mono); font-size: .65rem; color: var(--gold);
+}
+.sphere-hud-top, .sphere-hud-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.sphere-hud-reticle {
+  position: absolute; inset: 12%; border-radius: 50%;
+  border: 1px dashed rgba(139,111,212,.2);
+  pointer-events: none;
+  animation: spin 30s linear infinite;
+}
+
+
