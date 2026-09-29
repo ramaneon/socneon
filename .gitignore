@@ -3,3 +3,9 @@ dist
 dist-ssr
 *.local
 .DS_Store
+__pycache__/
+*.py[cod]
+.env
+venv/
+frontend/node_modules/
+backend/__pycache__/
