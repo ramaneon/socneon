@@ -1,5 +1,5 @@
 // ─── SOCNeon Killer Features Module (v2.5) ──────────────────────────────
-// 1. AI Incident Copilot & Natural Language Investigation
+// 1. Neon AI Threat Engine & Natural Language Investigation
 // 2. Threat Intel Enrichment (VirusTotal, AbuseIPDB, AlienVault OTX, Shodan)
 // 3. SIEM Query Generator (Splunk SPL, Elastic KQL, Sentinel KQL, Sigma YAML)
 // 4. Incident Response Playbook & Ticket Export (Jira, TheHive, Markdown)
@@ -9,8 +9,8 @@
 
 window.SOCKillerFeatures = (() => {
 
-  // ─── 1. AI Incident Copilot ──────────────────────────────────────────────
-  function runCopilotAnalysis(findings, records, iocs, threatScore) {
+  // ─── 1. Neon AI Incident Analysis ─────────────────────────────────────────
+  function runNeonAnalysis(findings, records, iocs, threatScore) {
     if (!findings || findings.length === 0) {
       return {
         summary: "No anomalous security findings detected in the provided telemetry.",
@@ -125,20 +125,20 @@ tags:
 
   // ─── 4. Incident Response Playbook & TheHive/Jira Markdown ───────────────
   function generateIncidentTicket(findings, records, iocs, threatScore, filename) {
-    const copilot = runCopilotAnalysis(findings, records, iocs, threatScore);
+    const analysis = runNeonAnalysis(findings, records, iocs, threatScore);
     const date = new Date().toISOString();
     const ips = Object.keys(iocs?.ips || {});
 
     return `## [INCIDENT TICKET] Security Anomaly Detected in ${filename || 'Log Stream'}
 **Date / Timestamp:** ${date}
-**Severity Verdict:** ${copilot.verdict}
+**Severity Verdict:** ${analysis.verdict}
 **Overall Threat Score:** ${threatScore?.score ?? 0}/100
 **Total Log Events:** ${records?.length || 0} | **Findings Triggered:** ${findings?.length || 0}
 
 ---
 
 ### Executive Incident Summary
-${copilot.summary}
+${analysis.summary}
 
 ---
 
@@ -149,24 +149,24 @@ ${copilot.summary}
 ---
 
 ### Containment & Response Checklist (Playbook)
-${copilot.containment.map((c, i) => `- [ ] **Step ${i + 1}:** ${c}`).join('\n')}
+${analysis.containment.map((c, i) => `- [ ] **Step ${i + 1}:** ${c}`).join('\n')}
 
 ---
 
 ### Hunting & Detection Queries
 #### Splunk SPL
 \`\`\`splunk
-${copilot.queries.splunk}
+${analysis.queries.splunk}
 \`\`\`
 
 #### Microsoft Sentinel KQL
 \`\`\`kql
-${copilot.queries.sentinelKQL}
+${analysis.queries.sentinelKQL}
 \`\`\`
 
 #### Sigma Rule YAML
 \`\`\`yaml
-${copilot.queries.sigma}
+${analysis.queries.sigma}
 \`\`\`
 
 *Generated automatically by SOCNeon Forensic AI Engine.*`;
@@ -316,7 +316,7 @@ ${copilot.queries.sigma}
   }
 
   return {
-    runCopilotAnalysis,
+    runNeonAnalysis,
     generateSIEMQueries,
     getIntelLinks,
     generateIncidentTicket,

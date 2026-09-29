@@ -242,7 +242,7 @@ function renderCurrentTab() {
   applyFilters();
   switch (State.activeTab) {
     case 'alerts':       renderAlerts();       break;
-    case 'copilot':      renderCopilot();      break;
+    case 'neonai':       renderNeonAI();       break;
     case 'events':       renderEvents();       break;
     case 'summary':      renderSummary();      break;
     case 'timeline':     renderTimeline();     break;
@@ -1010,8 +1010,8 @@ function initKeyboardShortcuts() {
 }
 
 /* ─── Killer Features: Neon AI [Under Development], SIEM & Playbook ─────── */
-function renderCopilot() {
-  const container = $('copilot-content');
+function renderNeonAI() {
+  const container = $('neonai-content');
   if (!container) return;
 
   container.innerHTML = `
@@ -1026,8 +1026,8 @@ function renderCopilot() {
             ⚡
           </div>
           <div>
-            <h2 style="font-size:1.5rem;font-weight:800;color:#ff7f00;letter-spacing:-0.02em;">Neon AI — Autonomous SOC Copilot</h2>
-            <p style="font-size:0.85rem;color:var(--text-sec);margin-top:2px;">Local LLM Security Model & Autonomous Root-Cause Investigation</p>
+            <h2 style="font-size:1.5rem;font-weight:800;color:#ff7f00;letter-spacing:-0.02em;">Neon AI — Autonomous Security Engine</h2>
+            <p style="font-size:0.85rem;color:var(--text-sec);margin-top:2px;">Proprietary Threat Intelligence & Automated Forensic Root-Cause Analysis</p>
           </div>
         </div>
 
