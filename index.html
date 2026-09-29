@@ -1,14 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mainframe®</title>
-    <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/5ac3fe7c6abd2f62067f266d89671492?family=HelveticaNowDisplay-Medium" type="text/css" />
-    <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/1aa3377e489837a26d019bba501e779d?family=HelveticaNowDisplayW01-Rg" type="text/css" />
-  </head>
-  <body class="bg-black text-white m-0 p-0 overflow-x-hidden selection:bg-white selection:text-black">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mainframe®</title>
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/5ac3fe7c6abd2f62067f266d89671492?family=HelveticaNowDisplay-Medium" type="text/css" />
+  <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/1aa3377e489837a26d019bba501e779d?family=HelveticaNowDisplayW01-Rg" type="text/css" />
+
+  <!-- Tailwind CSS via CDN for instant, zero-build browser rendering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --font-heading: 'HelveticaNowDisplay-Medium', 'Helvetica Neue', Arial, sans-serif;
+      --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Video background positioning */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      object-fit: cover;
+      object-position: 70% center;
+      pointer-events: none;
+    }
+
+    /* Cursor blink */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background-color: #fff;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* Action pills fade-in animation */
+    .action-pills-container {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .action-pills-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Pill button base */
+    .pill-btn-white {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      color: #000;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 9999px;
+      font-size: 13px;
+      padding: 0.3em 1rem;
+      margin: 0 0.2em 0.4em 0.2em;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    @media (min-width: 640px) {
+      .pill-btn-white {
+        font-size: 15px;
+        padding: 0.3em 1.25rem;
+      }
+    }
+    .pill-btn-white:hover {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .pill-btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+      border-radius: 9999px;
+      font-size: 13px;
+      padding: 0.3em 1rem;
+      margin: 0 0.2em 0.4em 0.2em;
+      white-space: nowrap;
+      cursor: pointer;
+      gap: 0.5rem;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    @media (min-width: 640px) {
+      .pill-btn-outline {
+        font-size: 15px;
+        padding: 0.3em 1.25rem;
+        gap: 0.75rem;
+      }
+    }
+    .pill-btn-outline:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    /* Copied toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(255, 255, 255, 0.95);
+      color: #000;
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+      z-index: 999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal for SOC Analyzer tool */
+    .soc-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      overflow-y: auto;
+      padding: 2rem 1rem;
+    }
+    .soc-modal.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="select-none">
+
+  <!-- ── BACKGROUND VIDEO (mouse-scrub controlled) ────────────────────────── -->
+  <video
+    id="bg-video"
+    class="bg-video"
+    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
+    muted
+    playsinline
+    preload="auto"
+  ></video>
+
+  <!-- ── NAVBAR (fixed, z-index: 10) ──────────────────────────────────────── -->
+  <header class="fixed top-0 left-0 w-full z-10 px-5 sm:px-8 py-4 sm:py-5 flex justify-between items-center">
+    
+    <!-- Logo (left) -->
+    <div class="flex items-center gap-3">
+      <span class="text-[21px] sm:text-[26px] tracking-tight text-white leading-none" style="font-family: var(--font-heading);">
+        Mainframe®
+      </span>
+      <span class="text-[25px] sm:text-[30px] text-white select-none leading-none" style="letter-spacing: -0.02em;" aria-hidden="true">
+        ✳︎
+      </span>
+    </div>
+
+    <!-- Desktop nav links (center, hidden below md) -->
+    <nav class="hidden md:flex items-center text-[23px] text-white">
+      <a href="#labs" class="hover:opacity-60 transition-opacity">Labs</a>
+      <span>,&nbsp;</span>
+      <a href="#studio" class="hover:opacity-60 transition-opacity">Studio</a>
+      <span>,&nbsp;</span>
+      <a href="#openings" class="hover:opacity-60 transition-opacity">Openings</a>
+      <span>,&nbsp;</span>
+      <a href="#shop" class="hover:opacity-60 transition-opacity">Shop</a>
+    </nav>
+
+    <!-- Desktop CTA (right, hidden below md) -->
+    <div class="hidden md:block">
+      <a href="mailto:hello@mainframe.co" class="text-[23px] text-white underline underline-offset-2 hover:opacity-60 transition-opacity">
+        Get in touch
+      </a>
+    </div>
+
+    <!-- Mobile hamburger (visible below md) -->
+    <button
+      id="hamburger-btn"
+      type="button"
+      class="md:hidden flex flex-col justify-center items-center gap-[5px] w-8 h-8 p-1 z-20 focus:outline-none cursor-pointer"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+    >
+      <span id="bar-top" class="w-6 h-[2px] bg-white transition-all duration-300 transform origin-center"></span>
+      <span id="bar-mid" class="w-6 h-[2px] bg-white transition-opacity duration-300"></span>
+      <span id="bar-bot" class="w-6 h-[2px] bg-white transition-all duration-300 transform origin-center"></span>
+    </button>
+  </header>
+
+  <!-- ── MOBILE OVERLAY (z-index: 9) ──────────────────────────────────────── -->
+  <div
+    id="mobile-overlay"
+    class="fixed inset-0 bg-black/90 backdrop-blur-md z-[9] flex flex-col justify-center px-8 gap-8 transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"
+  >
+    <a href="#labs" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Labs</a>
+    <a href="#studio" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Studio</a>
+    <a href="#openings" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Openings</a>
+    <a href="#shop" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Shop</a>
+    <a href="mailto:hello@mainframe.co" class="mobile-nav-link text-[32px] font-medium text-white underline underline-offset-4 hover:opacity-60 transition-opacity">Get in touch</a>
+  </div>
+
+  <!-- ── HERO SECTION (z-index: 1) ─────────────────────────────────────────── -->
+  <main class="relative z-[1] w-full h-screen flex flex-col justify-end pb-12 md:justify-center md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden">
+    <div class="max-w-xl relative z-10">
+      
+      <!-- 1. Blurred intro label -->
+      <div
+        class="pointer-events-none select-none mb-5 sm:mb-6 text-white"
+        style="font-size: clamp(18px, 4vw, 26px); line-height: 1.3; font-weight: 400; filter: blur(4px);"
+      >
+        Hey there, meet A.R.I.A,<br />
+        Mainframe's Adaptive Response Interface Agent
+      </div>
+
+      <!-- 2. Typewriter text -->
+      <p
+        id="typewriter-text"
+        class="text-white mb-5 sm:mb-6"
+        style="font-size: clamp(18px, 4vw, 26px); line-height: 1.35; font-weight: 400; min-height: 54px;"
+      >
+        <span id="typed-content"></span><span id="typewriter-cursor" class="cursor-blink" aria-hidden="true"></span>
+      </p>
+
+      <!-- 3. Action pill buttons -->
+      <div id="action-pills" class="action-pills-container flex flex-wrap gap-y-1">
+        
+        <!-- 4 white pill buttons -->
+        <button type="button" class="pill-btn-white" onclick="handlePillClick('Pitch us an idea')">
+          Pitch us an idea
+        </button>
+
+        <button type="button" class="pill-btn-white" onclick="handlePillClick('Come work here')">
+          Come work here
+        </button>
+
+        <button type="button" class="pill-btn-white" onclick="handlePillClick('Send a brief hello')">
+          Send a brief hello
+        </button>
+
+        <button type="button" class="pill-btn-white" onclick="handlePillClick('See how we operate')">
+          See how we operate
+        </button>
+
+        <!-- 1 outline pill button -->
+        <button
+          type="button"
+          id="copy-email-btn"
+          class="pill-btn-outline"
+          title="Click to copy email address"
+        >
+          <span>Reach us: <span class="underline underline-offset-1">hello@mainframe.co</span></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Copied Toast -->
+  <div id="toast" class="toast">Copied hello@mainframe.co to clipboard</div>
+
+  <script>
+    // ── 1. Video mouse-scrub controller ────────────────────────────────────
+    const video = document.getElementById('bg-video');
+    let prevX = null;
+    let targetTime = 0;
+    let isSeeking = false;
+    const SENSITIVITY = 0.8;
+
+    window.addEventListener('mousemove', (e) => {
+      if (!video || !video.duration || isNaN(video.duration)) return;
+
+      if (prevX === null) {
+        prevX = e.clientX;
+        targetTime = video.currentTime;
+        return;
+      }
+
+      const delta = e.clientX - prevX;
+      prevX = e.clientX;
+
+      const timeDelta = (delta / window.innerWidth) * SENSITIVITY * video.duration;
+      targetTime = Math.max(0, Math.min(video.duration, targetTime + timeDelta));
+
+      if (!isSeeking) {
+        isSeeking = true;
+        video.currentTime = targetTime;
+      }
+    });
+
+    video.addEventListener('seeked', () => {
+      if (!video || !video.duration) return;
+      if (Math.abs(video.currentTime - targetTime) > 0.04) {
+        video.currentTime = targetTime;
+      } else {
+        isSeeking = false;
+      }
+    });
+
+    // ── 2. Typewriter Effect ────────────────────────────────────────────────
+    const fullText = "Glad you stopped in. Good taste tends to find us. Now, what are we building?";
+    const typedContentEl = document.getElementById('typed-content');
+    const cursorEl = document.getElementById('typewriter-cursor');
+    const SPEED = 38;
+    const START_DELAY = 600;
+
+    let charIndex = 0;
+    setTimeout(() => {
+      const typeInterval = setInterval(() => {
+        if (charIndex < fullText.length) {
+          typedContentEl.textContent = fullText.slice(0, charIndex + 1);
+          charIndex++;
+        } else {
+          clearInterval(typeInterval);
+          if (cursorEl) cursorEl.style.display = 'none'; // cursor disappears when done
+        }
+      }, SPEED);
+    }, START_DELAY);
+
+    // ── 3. Action Pill Buttons Animation (400ms after load) ─────────────────
+    setTimeout(() => {
+      const pills = document.getElementById('action-pills');
+      if (pills) pills.classList.add('visible');
+    }, 400);
+
+    // ── 4. Copy Email Handler ──────────────────────────────────────────────
+    const copyBtn = document.getElementById('copy-email-btn');
+    const toast = document.getElementById('toast');
+
+    copyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigator.clipboard.writeText('hello@mainframe.co').then(() => {
+        toast.classList.add('active');
+        setTimeout(() => toast.classList.remove('active'), 2000);
+      });
+    });
+
+    function handlePillClick(label) {
+      window.location.href = "mailto:hello@mainframe.co?subject=" + encodeURIComponent(label);
+    }
+
+    // ── 5. Mobile Hamburger Navigation ─────────────────────────────────────
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    const barTop = document.getElementById('bar-top');
+    const barMid = document.getElementById('bar-mid');
+    const barBot = document.getElementById('bar-bot');
+    let menuOpen = false;
+
+    function toggleMenu(open) {
+      menuOpen = open !== undefined ? open : !menuOpen;
+      hamburgerBtn.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+
+      if (menuOpen) {
+        barTop.style.transform = 'rotate(45deg) translateY(7px)';
+        barMid.style.opacity = '0';
+        barBot.style.transform = 'rotate(-45deg) translateY(-7px)';
+        mobileOverlay.classList.remove('opacity-0', 'pointer-events-none');
+        mobileOverlay.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        barTop.style.transform = '';
+        barMid.style.opacity = '1';
+        barBot.style.transform = '';
+        mobileOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+        mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    hamburgerBtn.addEventListener('click', () => toggleMenu());
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => toggleMenu(false));
+    });
+  </script>
+
+</body>
 </html>
