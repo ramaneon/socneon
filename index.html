@@ -69,6 +69,9 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn btn-sm btn-outline" id="header-feedback-btn" style="border-color:#00e5ff;color:#00e5ff;font-weight:600;">
+        💬 Feedback
+      </button>
       <div class="privacy-badge" title="Zero network requests. All analysis runs in your browser.">
         <span class="privacy-dot" aria-hidden="true"></span>
         <span>100% Offline</span>
@@ -231,12 +234,15 @@
 
       <nav class="tabs-bar" role="tablist" aria-label="Dashboard sections">
         <button class="tab-btn active" role="tab" data-tab="alerts"       aria-controls="tab-alerts"       aria-selected="true">🚨 Alerts</button>
+        <button class="tab-btn"        role="tab" data-tab="copilot"      aria-controls="tab-copilot"      aria-selected="false" style="color:#00ff9d;border-color:rgba(0,255,157,0.3);">🤖 AI Copilot</button>
         <button class="tab-btn"        role="tab" data-tab="events"       aria-controls="tab-events"       aria-selected="false">📋 Events</button>
         <button class="tab-btn"        role="tab" data-tab="summary"      aria-controls="tab-summary"      aria-selected="false">📊 Summary</button>
         <button class="tab-btn"        role="tab" data-tab="timeline"     aria-controls="tab-timeline"     aria-selected="false">📈 Timeline</button>
         <button class="tab-btn"        role="tab" data-tab="iocs"         aria-controls="tab-iocs"         aria-selected="false">💉 IOCs</button>
         <button class="tab-btn"        role="tab" data-tab="mitre"        aria-controls="tab-mitre"        aria-selected="false">🗺 MITRE</button>
         <button class="tab-btn"        role="tab" data-tab="correlations" aria-controls="tab-correlations" aria-selected="false">🔗 Chains</button>
+        <button class="tab-btn"        role="tab" data-tab="siem"         aria-controls="tab-siem"         aria-selected="false" style="color:#00e5ff;">⚡ SIEM Queries</button>
+        <button class="tab-btn"        role="tab" data-tab="playbook"     aria-controls="tab-playbook"     aria-selected="false" style="color:#ffd700;">🛡 Playbook</button>
         <button class="tab-btn"        role="tab" data-tab="rules"        aria-controls="tab-rules"        aria-selected="false">⚙ Rules</button>
         <button class="tab-btn"        role="tab" data-tab="report"       aria-controls="tab-report"       aria-selected="false">📄 Report</button>
       </nav>
@@ -260,6 +266,8 @@
         <div id="alerts-list" aria-live="polite"></div>
       </div>
 
+      <div class="tab-panel" id="tab-copilot" role="tabpanel"><div id="copilot-content" aria-live="polite"></div></div>
+
       <div class="tab-panel" id="tab-events" role="tabpanel">
         <div class="panel-header">
           <span id="events-count" class="events-count">0 events</span>
@@ -277,6 +285,8 @@
       <div class="tab-panel" id="tab-iocs" role="tabpanel"></div>
       <div class="tab-panel" id="tab-mitre" role="tabpanel"></div>
       <div class="tab-panel" id="tab-correlations" role="tabpanel"></div>
+      <div class="tab-panel" id="tab-siem" role="tabpanel"><div id="siem-content" aria-live="polite"></div></div>
+      <div class="tab-panel" id="tab-playbook" role="tabpanel"><div id="playbook-content" aria-live="polite"></div></div>
       <div class="tab-panel" id="tab-rules" role="tabpanel"></div>
       <div class="tab-panel" id="tab-report" role="tabpanel"></div>
 
@@ -308,6 +318,7 @@
 <script src="js/demo-data.js"></script>
 <script src="js/charts.js"></script>
 <script src="js/advanced.js"></script>
+<script src="js/killer-features.js"></script>
 <script src="js/app.js"></script>
 <script src="js/globe3d.js"></script>
 <script src="js/cursor3d.js"></script>

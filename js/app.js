@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initDropZone(); initDemoButtons(); initTabs(); initSearch();
   initSeverityFilter(); initExport(); initThemeToggle();
   initKeyboardShortcuts(); initCustomRuleBuilder(); animateHeader();
+
+  const fbBtn = $('header-feedback-btn');
+  if (fbBtn && window.SOCKillerFeatures) {
+    fbBtn.addEventListener('click', () => SOCKillerFeatures.openFeedbackModal());
+  }
 });
 
 function animateHeader() {
@@ -226,12 +231,15 @@ function renderCurrentTab() {
   applyFilters();
   switch (State.activeTab) {
     case 'alerts':       renderAlerts();       break;
+    case 'copilot':      renderCopilot();      break;
     case 'events':       renderEvents();       break;
     case 'summary':      renderSummary();      break;
     case 'timeline':     renderTimeline();     break;
     case 'iocs':         renderIOCs();         break;
     case 'mitre':        renderMITRE();        break;
     case 'correlations': renderCorrelations(); break;
+    case 'siem':         renderSIEM();         break;
+    case 'playbook':     renderPlaybook();     break;
     case 'rules':        renderCustomRules();  break;
     case 'report':       renderReport();       break;
   }
@@ -507,10 +515,10 @@ function renderIOCs() {
   const iocs = State.iocs;
   if (!iocs) { container.innerHTML = '<div class="empty-state"><p>No log data loaded.</p></div>'; return; }
 
-  function iocTable(title, rows, cols, emptyMsg = 'None found') {
+  function iocTable(title, rows, cols, emptyMsg = 'None found', isRawHtml = false) {
     if (!rows.length) return `<div class="ioc-card"><h3>${title}</h3><p class="muted">${emptyMsg}</p></div>`;
     const header = cols.map(c => `<th>${sanitize(c)}</th>`).join('');
-    const body   = rows.map(r => `<tr>${r.map(c => `<td>${sanitize(String(c))}</td>`).join('')}</tr>`).join('');
+    const body   = rows.map(r => `<tr>${r.map(c => `<td>${isRawHtml ? c : sanitize(String(c))}</td>`).join('')}</tr>`).join('');
     return `<div class="ioc-card">
       <div class="ioc-header"><h3>${title} <span class="badge">${rows.length}</span></h3>
         <button class="btn btn-sm export-ioc-csv" data-title="${sanitize(title)}">⬇ CSV</button></div>
@@ -518,9 +526,24 @@ function renderIOCs() {
     </div>`;
   }
 
-  const ipRows = iocs.ips.slice(0,100).map(([ip,d]) => [
-    ip, d.private ? '🔒 Internal' : '🌐 External', d.count
-  ]);
+  const ipRows = iocs.ips.slice(0,100).map(([ip,d]) => {
+    let intel = '';
+    if (!d.private && window.SOCKillerFeatures) {
+      const l = SOCKillerFeatures.getIntelLinks(ip);
+      intel = `
+        <span style="display:inline-flex;gap:4px;margin-left:6px;">
+          <a href="${l.virustotal}" target="_blank" rel="noopener" class="badge" style="background:#00e5ff;color:#000;text-decoration:none;font-size:0.65rem;" title="Search VirusTotal">VT ↗</a>
+          <a href="${l.abuseipdb}" target="_blank" rel="noopener" class="badge" style="background:#ff3860;color:#fff;text-decoration:none;font-size:0.65rem;" title="Search AbuseIPDB">Abuse ↗</a>
+          <a href="${l.otx}" target="_blank" rel="noopener" class="badge" style="background:#7b2fff;color:#fff;text-decoration:none;font-size:0.65rem;" title="Search AlienVault OTX">OTX ↗</a>
+        </span>
+      `;
+    }
+    return [
+      `<code>${sanitize(ip)}</code> ${intel}`,
+      d.private ? '🔒 Internal' : '🌐 External',
+      d.count
+    ];
+  });
   const hashRows = iocs.hashes.slice(0,50).map(([h,d]) => [h.slice(0,20)+'…', d.type, d.count]);
   const urlRows  = iocs.urls.slice(0,50).map(([u,d]) => [u.slice(0,60), d.count]);
   const userRows = iocs.users.slice(0,30).map(([u,d]) => [u, d.count]);
@@ -534,7 +557,7 @@ function renderIOCs() {
       <button class="btn btn-sm" id="export-all-iocs">⬇ Export All IOCs (JSON)</button>
     </div>
     <div class="ioc-grid">
-      ${iocTable('🌐 IP Addresses', ipRows, ['IP','Type','Events'])}
+      ${iocTable('🌐 IP Addresses', ipRows, ['IP','Type','Events'], 'None found', true)}
       ${iocTable('🔗 URLs / Paths', urlRows, ['URL/Path','Events'])}
       ${iocTable('🔑 File Hashes', hashRows, ['Hash (truncated)','Type','Events'])}
       ${iocTable('👤 Usernames', userRows, ['Username','Events'])}
@@ -959,5 +982,146 @@ function initKeyboardShortcuts() {
     if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); $('search-input')?.focus(); }
     if ((e.ctrlKey||e.metaKey) && e.key==='o') { e.preventDefault(); $('file-input')?.click(); }
     if (e.key==='Escape') { $$('.modal.active').forEach(m=>m.classList.remove('active')); }
+  });
+}
+
+/* ─── Killer Features: Copilot, SIEM & Playbook Rendering ───────────────── */
+function renderCopilot() {
+  const container = $('copilot-content');
+  if (!container || !window.SOCKillerFeatures) return;
+
+  const data = SOCKillerFeatures.runCopilotAnalysis(State.findings, State.raw?.records || [], State.iocs, State.threatScore);
+
+  container.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:1100px;margin:0 auto;padding:1rem 0;">
+      <!-- Hero AI Verdict Card -->
+      <div style="background:var(--bg-card);border:1px solid #00e5ff;border-radius:var(--radius-lg);padding:1.5rem;position:relative;overflow:hidden;box-shadow:0 0 25px rgba(0,229,255,0.15);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1.8rem;">🤖</span>
+            <div>
+              <h2 style="font-size:1.25rem;font-weight:700;color:#00ff9d;">AI Forensic Investigation Copilot</h2>
+              <p style="font-size:0.75rem;color:var(--text-sec);">Automated Triaged Analysis · MITRE Alignment · Containment Playbooks</p>
+            </div>
+          </div>
+          <span style="padding:0.4rem 0.8rem;border-radius:100px;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;background:rgba(255,56,96,0.15);border:1px solid #ff3860;color:#ff3860;">
+            ${sanitize(data.verdict)}
+          </span>
+        </div>
+        <p style="font-size:0.95rem;color:var(--text-primary);line-height:1.65;background:rgba(0,0,0,0.25);border-radius:var(--radius);padding:1rem;border-left:3px solid #00e5ff;">
+          ${sanitize(data.summary)}
+        </p>
+      </div>
+
+      <!-- Containment Actions & Live Remediation -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;">
+        <h3 style="color:#ffd700;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:0.95rem;">
+          🛡 Instant Incident Containment Checklist (Playbook)
+        </h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;">
+          ${data.containment.map((c, i) => `
+            <li style="display:flex;align-items:flex-start;gap:0.75rem;font-size:0.88rem;color:var(--text-primary);background:var(--bg-card2);padding:0.75rem;border-radius:var(--radius);border:1px solid var(--border);">
+              <span style="background:#00e5ff;color:#000;font-weight:700;font-size:0.7rem;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</span>
+              <span>${sanitize(c)}</span>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="showTab('siem')">⚡ Inspect SIEM Hunting Queries</button>
+        <button class="btn btn-outline" onclick="showTab('playbook')">📋 Export Full Incident Ticket</button>
+        <button class="btn btn-ghost" onclick="SOCKillerFeatures.openFeedbackModal()">💬 Send Feedback to Founder</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderSIEM() {
+  const container = $('siem-content');
+  if (!container || !window.SOCKillerFeatures) return;
+
+  const queries = SOCKillerFeatures.generateSIEMQueries(State.findings, State.iocs);
+
+  container.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:1100px;margin:0 auto;padding:1rem 0;">
+      <div>
+        <h3>⚡ Cross-SIEM Hunting Query Generator</h3>
+        <p class="muted">1-Click hunting rules generated directly from your analyzed log indicators</p>
+      </div>
+
+      <!-- Splunk SPL -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <strong style="color:#00e5ff;font-size:0.9rem;">Splunk SPL Query</strong>
+          <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.query);this.textContent='✓ Copied';" data-query="${encodeURIComponent(queries.splunk)}">Copy SPL</button>
+        </div>
+        <pre style="background:#070a12;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;color:#7ee787;overflow-x:auto;"><code>${sanitize(queries.splunk)}</code></pre>
+      </div>
+
+      <!-- Microsoft Sentinel KQL -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <strong style="color:#7b2fff;font-size:0.9rem;">Microsoft Sentinel / Defender KQL</strong>
+          <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.query);this.textContent='✓ Copied';" data-query="${encodeURIComponent(queries.sentinelKQL)}">Copy KQL</button>
+        </div>
+        <pre style="background:#070a12;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;color:#7ee787;overflow-x:auto;"><code>${sanitize(queries.sentinelKQL)}</code></pre>
+      </div>
+
+      <!-- Elastic / OpenSearch KQL -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <strong style="color:#00ff9d;font-size:0.9rem;">Elastic / Kibana KQL Query</strong>
+          <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.query);this.textContent='✓ Copied';" data-query="${encodeURIComponent(queries.elasticKQL)}">Copy Elastic</button>
+        </div>
+        <pre style="background:#070a12;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;color:#7ee787;overflow-x:auto;"><code>${sanitize(queries.elasticKQL)}</code></pre>
+      </div>
+
+      <!-- Sigma YAML Rule -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <strong style="color:#ffd700;font-size:0.9rem;">Sigma Rule (Generic Detection YAML)</strong>
+          <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.query);this.textContent='✓ Copied';" data-query="${encodeURIComponent(queries.sigma)}">Copy Sigma</button>
+        </div>
+        <pre style="background:#070a12;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;color:#7ee787;overflow-x:auto;"><code>${sanitize(queries.sigma)}</code></pre>
+      </div>
+    </div>
+  `;
+}
+
+function renderPlaybook() {
+  const container = $('playbook-content');
+  if (!container || !window.SOCKillerFeatures) return;
+
+  const ticketMd = SOCKillerFeatures.generateIncidentTicket(State.findings, State.raw?.records || [], State.iocs, State.threatScore, State.raw?.filename);
+
+  container.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:1100px;margin:0 auto;padding:1rem 0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h3>🛡 Incident Response Playbook & Ticket Export</h3>
+          <p class="muted">Ready-to-file incident report formatted for Jira, TheHive, GitHub Issues, or Slack</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn btn-sm btn-primary" id="copy-ticket-btn">📋 Copy Ticket Markdown</button>
+          <button class="btn btn-sm btn-outline" id="download-ticket-btn">⬇ Download Ticket (.md)</button>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;">
+        <pre style="background:#070a12;border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;color:#e2e8f5;font-size:0.83rem;line-height:1.6;white-space:pre-wrap;overflow-x:auto;"><code>${sanitize(ticketMd)}</code></pre>
+      </div>
+    </div>
+  `;
+
+  $('copy-ticket-btn').addEventListener('click', () => {
+    navigator.clipboard.writeText(ticketMd);
+    $('copy-ticket-btn').textContent = '✓ Copied!';
+    setTimeout(() => $('copy-ticket-btn').textContent = '📋 Copy Ticket Markdown', 2000);
+  });
+
+  $('download-ticket-btn').addEventListener('click', () => {
+    download('socneon-incident-ticket.md', ticketMd, 'text/markdown');
   });
 }
