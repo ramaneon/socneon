@@ -22,11 +22,11 @@ const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 
 const SEV_CONFIG = {
-  critical: { label:'Critical', color:'#ff3860', icon:'🔴', order:0 },
-  high:     { label:'High',     color:'#ff8c00', icon:'🟠', order:1 },
-  medium:   { label:'Medium',   color:'#ffd700', icon:'🟡', order:2 },
-  low:      { label:'Low',      color:'#00e5ff', icon:'🔵', order:3 },
-  info:     { label:'Info',     color:'#8892b0', icon:'⚪', order:4 },
+  critical: { label:'Critical', color:'#c9504a', icon:'🔴', order:0 },
+  high:     { label:'High',     color:'#c47c2e', icon:'🟠', order:1 },
+  medium:   { label:'Medium',   color:'#a8943c', icon:'🟡', order:2 },
+  low:      { label:'Low',      color:'#6aaa89', icon:'🔵', order:3 },
+  info:     { label:'Info',     color:'#7a75a0', icon:'⚪', order:4 },
 };
 
 function sanitize(s) {
@@ -211,12 +211,26 @@ function renderDashboard(filename) {
     const el = $(`stat-${sev}`);
     if (el) el.textContent = (sc.counts[sev] || 0).toLocaleString();
   }
-  $('stat-events').textContent = r.total.toLocaleString();
-  $('stat-rules').textContent  = State.findings.length.toLocaleString();
+  const elEvents = $('stat-events');
+  if (elEvents) elEvents.textContent = r.total.toLocaleString();
+  const elRules = $('stat-rules');
+  if (elRules) elRules.textContent = State.findings.length.toLocaleString();
 
   const ts = State.threatScore;
   const tEl = $('stat-threat-score');
-  if (tEl) { tEl.textContent = ts.score; tEl.style.color = ts.score >= 60 ? '#ff3860' : ts.score >= 40 ? '#ff8c00' : '#00e5ff'; }
+  if (tEl && ts) {
+    tEl.textContent = ts.score;
+    tEl.style.color = ts.score >= 60 ? 'var(--critical)' : ts.score >= 40 ? 'var(--high)' : 'var(--gold)';
+  }
+
+  const navAlerts = $('nav-count-alerts');
+  if (navAlerts) navAlerts.textContent = State.findings.length;
+  const navEvents = $('nav-count-events');
+  if (navEvents) navEvents.textContent = r.total.toLocaleString();
+  const navIOCs = $('nav-count-iocs');
+  if (navIOCs && State.iocs) navIOCs.textContent = State.iocs.totalCount || 0;
+  const navChains = $('nav-count-chains');
+  if (navChains && State.correlations) navChains.textContent = State.correlations.length || 0;
 
   updateSeverityBadges(sc.counts);
   renderCurrentTab();
@@ -945,14 +959,16 @@ function formatDuration(ms) {
 
 /* ─── Theme & Shortcuts ───────────────────────────────────────────────────── */
 function initThemeToggle() {
-  const btn = $('theme-toggle');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
+  const toggle = () => {
     document.body.classList.toggle('light-mode');
-    btn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
-    // Redraw charts if on timeline tab
+    const isLight = document.body.classList.contains('light-mode');
+    const b1 = $('theme-toggle'), b2 = $('theme-toggle-dash');
+    if (b1) b1.textContent = isLight ? '🌙' : '☀️';
+    if (b2) b2.textContent = isLight ? '🌙 Dark' : '☀️ Theme';
     if (State.activeTab === 'timeline') renderTimeline();
-  });
+  };
+  $('theme-toggle')?.addEventListener('click', toggle);
+  $('theme-toggle-dash')?.addEventListener('click', toggle);
 }
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', e => {

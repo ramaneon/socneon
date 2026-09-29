@@ -139,14 +139,15 @@ window.SOCNeonAdvanced = (() => {
     const sortMap = m => [...m.entries()].sort((a, b) => b[1].count - a[1].count);
 
     return {
-      ips:     sortMap(ips),
-      domains: sortMap(domains),
-      hashes:  sortMap(hashes),
-      urls:    sortMap(urls),
-      users:   sortMap(users),
-      hosts:   sortMap(hosts),
-      emails:  [...emails],
-      cves:    [...cves],
+      ips:        sortMap(ips),
+      domains:    sortMap(domains),
+      hashes:     sortMap(hashes),
+      urls:       sortMap(urls),
+      users:      sortMap(users),
+      hosts:      sortMap(hosts),
+      emails:     [...emails],
+      cves:       [...cves],
+      totalCount: ips.size + domains.size + hashes.size + urls.size + users.size + hosts.size + emails.size + cves.size,
     };
   }
 
@@ -369,20 +370,20 @@ window.SOCNeonAdvanced = (() => {
     const firedTechniques = mitreData.filter(t => t.fired);
     const now = new Date().toLocaleString();
 
-    const sevColors = { critical: '#ff3860', high: '#ff8c00', medium: '#ffd700', low: '#00e5ff', info: '#8892b0' };
+    const sevColors = { critical: '#c9504a', high: '#c47c2e', medium: '#a8943c', low: '#6aaa89', info: '#7a75a0' };
 
     const topAlerts = findings.slice(0, 15).map(f => `
       <tr>
-        <td style="color:${sevColors[f.severity] || '#fff'};font-weight:700;white-space:nowrap">${f.severity.toUpperCase()}</td>
+        <td style="color:${sevColors[f.severity] || '#ede8dc'};font-weight:700;white-space:nowrap">${f.severity.toUpperCase()}</td>
         <td><code style="font-size:11px">${f.ruleId}</code></td>
         <td>${f.title}</td>
         <td>${f.confidence}%</td>
-        <td style="font-size:11px;color:#8892b0">${f.timestamp ? new Date(f.timestamp).toLocaleString() : '—'}</td>
+        <td style="font-size:11px;color:#7a75a0">${f.timestamp ? new Date(f.timestamp).toLocaleString() : '—'}</td>
       </tr>`).join('');
 
     const topIPs = iocs.ips.slice(0, 10).map(([ip, data]) =>
       `<tr><td style="font-family:monospace">${ip}</td>
-           <td>${data.private ? 'Internal' : '<span style="color:#ff3860">External</span>'}</td>
+           <td>${data.private ? 'Internal' : '<span style="color:#c9504a">External</span>'}</td>
            <td>${data.count}</td></tr>`
     ).join('');
 
@@ -397,13 +398,14 @@ window.SOCNeonAdvanced = (() => {
 <meta charset="UTF-8"/>
 <title>SOCNeon Report — ${now}</title>
 <style>
-  body { font-family: 'Segoe UI', sans-serif; background: #050a13; color: #e2e8f5; margin: 0; padding: 2rem; }
-  h1 { color: #00e5ff; font-size: 2rem; } h2 { color: #8892b0; border-bottom: 1px solid #1e2d4a; padding-bottom: .5rem; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
-  th { background: #0d1626; color: #8892b0; text-align: left; padding: .5rem .75rem; font-size: .75rem; text-transform: uppercase; }
-  td { padding: .45rem .75rem; border-bottom: 1px solid #1e2d4a; font-size: .85rem; }
-  .score { font-size: 4rem; color: ${sevColors[score.score >= 80 ? 'critical' : score.score >= 60 ? 'high' : score.score >= 40 ? 'medium' : 'low'] || '#00e5ff'}; font-weight: 700; }
-  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 12px; font-size: .7rem; font-weight: 700; background: #1e2d4a; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #09071a; color: #ede8dc; margin: 0; padding: 2.5rem; line-height: 1.6; }
+  h1 { color: #c9a55a; font-family: 'Playfair Display', Georgia, serif; font-size: 2.2rem; margin-bottom: .25rem; }
+  h2 { color: #b8b0d0; border-bottom: 1px solid #2a2545; padding-bottom: .5rem; font-size: 1.1rem; margin-top: 2rem; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: #100e22; border: 1px solid #2a2545; border-radius: 8px; overflow: hidden; }
+  th { background: #16132e; color: #b8b0d0; text-align: left; padding: .6rem .8rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+  td { padding: .5rem .8rem; border-bottom: 1px solid #2a2545; font-size: .82rem; }
+  .score { font-size: 3.5rem; color: ${sevColors[score.score >= 80 ? 'critical' : score.score >= 60 ? 'high' : score.score >= 40 ? 'medium' : 'low'] || '#c9a55a'}; font-weight: 700; font-family: monospace; }
+  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 12px; font-size: .7rem; font-weight: 700; background: #2a2545; }
   @media print { body { background: white; color: black; } th { background: #f0f0f0; color: #333; } }
 </style>
 </head>

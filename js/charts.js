@@ -8,16 +8,16 @@
 window.SOCNeonCharts = (() => {
 
   const C = {
-    critical: '#ff3860', high: '#ff8c00', medium: '#ffd700',
-    low: '#00e5ff', info: '#8892b0',
-    accent: '#00e5ff', accent2: '#7b2fff', accent3: '#00ff9d',
-    grid: '#1e2d4a', text: '#8892b0', textBright: '#e2e8f5', bg: '#0d1626',
+    critical: '#c9504a', high: '#c47c2e', medium: '#a8943c',
+    low: '#6aaa89', info: '#7a75a0',
+    accent: '#c9a55a', accent2: '#8b6fd4', accent3: '#6aaa89',
+    grid: '#2a2545', text: '#6b6490', textBright: '#ede8dc', bg: '#100e22',
   };
 
   function isDark() { return !document.body.classList.contains('light-mode'); }
-  function gridColor() { return isDark() ? '#1e2d4a' : '#e2e8f0'; }
-  function textColor() { return isDark() ? '#8892b0' : '#4a5568'; }
-  function bgColor()   { return isDark() ? '#0d1626' : '#f7fafc'; }
+  function gridColor() { return isDark() ? '#2a2545' : '#cfc4a6'; }
+  function textColor() { return isDark() ? '#6b6490' : '#7d728e'; }
+  function bgColor()   { return isDark() ? '#100e22' : '#ede7d5'; }
 
   function setupCanvas(canvas) {
     const dpr = window.devicePixelRatio || 1;
