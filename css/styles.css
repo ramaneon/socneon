@@ -318,6 +318,85 @@ a:hover { text-decoration: underline; }
   opacity: 0.7;
 }
 
+/* ─── 3D Interactive Cyber Globe ─────────────────────────────────────── */
+.globe-3d-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 380px;
+  margin: 1.5rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+#globe-3d-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+  outline: none;
+  filter: drop-shadow(0 0 45px rgba(0, 229, 255, 0.22));
+}
+
+#globe-3d-canvas:active {
+  cursor: grabbing;
+}
+
+.globe-hud-overlay {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(10, 15, 25, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 100px;
+  padding: 0.35rem 0.9rem;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.globe-hud-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #00e5ff;
+}
+
+.globe-hud-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 0.6rem;
+}
+
+.globe-tooltip {
+  position: fixed;
+  display: none;
+  background: rgba(12, 17, 29, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid #00e5ff;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: #fff;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 229, 255, 0.2);
+  line-height: 1.4;
+}
+
+/* ─── 3D Card Tilt Effects ────────────────────────────────────────────── */
+.drop-zone, .demo-btn, .kpi-card, .chart-card {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.25s, border-color 0.25s;
+  will-change: transform;
+}
+
 /* ─── Upload Area ─────────────────────────────────────────────────────── */
 .upload-area { max-width: 680px; margin: 2rem auto 1.5rem; }
 
