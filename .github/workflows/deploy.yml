@@ -1,4 +1,4 @@
-name: Deploy Mainframe to GitHub Pages
+﻿name: Deploy SOCNeon to GitHub Pages
 
 on:
   push:

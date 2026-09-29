@@ -1,11 +1,11 @@
-/**
- * SOCNeon — app.js  v2.0
+﻿/**
+ * SOCNeon ÔÇö app.js  v2.0
  * Full UI controller: 9 tabs, advanced search, all feature integrations.
  * All processing is client-side. No data leaves the browser.
  */
 'use strict';
 
-/* ─── State ───────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ State ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 const State = {
   raw: null, findings: [], filtered: [], filteredFindings: [],
   iocs: null, correlations: [], threatScore: null,
@@ -22,11 +22,11 @@ const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 
 const SEV_CONFIG = {
-  critical: { label:'Critical', color:'#c9504a', icon:'🔴', order:0 },
-  high:     { label:'High',     color:'#c47c2e', icon:'🟠', order:1 },
-  medium:   { label:'Medium',   color:'#a8943c', icon:'🟡', order:2 },
-  low:      { label:'Low',      color:'#6aaa89', icon:'🔵', order:3 },
-  info:     { label:'Info',     color:'#7a75a0', icon:'⚪', order:4 },
+  critical: { label:'Critical', color:'#ff3860', icon:'­ƒö┤', order:0 },
+  high:     { label:'High',     color:'#ff8c00', icon:'­ƒƒá', order:1 },
+  medium:   { label:'Medium',   color:'#ffd700', icon:'­ƒƒí', order:2 },
+  low:      { label:'Low',      color:'#00e5ff', icon:'­ƒöÁ', order:3 },
+  info:     { label:'Info',     color:'#8892b0', icon:'ÔÜ¬', order:4 },
 };
 
 function sanitize(s) {
@@ -35,31 +35,12 @@ function sanitize(s) {
                   .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-let heroRadar = null, dashRadar = null;
-
-/* ─── Boot ────────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Boot ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 document.addEventListener('DOMContentLoaded', () => {
   State.customRules = SOCNeonAdvanced.loadCustomRules();
   initDropZone(); initDemoButtons(); initTabs(); initSearch();
   initSeverityFilter(); initExport(); initThemeToggle();
   initKeyboardShortcuts(); initCustomRuleBuilder(); animateHeader();
-
-  // Originkit visual components
-  if (window.SOCNeonVisuals) {
-    new SOCNeonVisuals.AsciiTelemetryStream('hero-stream-canvas');
-    heroRadar = new SOCNeonVisuals.ThreatRadar('hero-radar-canvas');
-    dashRadar = new SOCNeonVisuals.ThreatRadar('dash-radar-canvas');
-    new SOCNeonVisuals.HudCrosshair();
-    SOCNeonVisuals.initBeamSweeps();
-    SOCNeonVisuals.KineticScramble.attachAll();
-  }
-
-  // MotionSites AI visual components (3D Sphere, Embers, Tilt)
-  if (window.SOCMotionVisuals) {
-    new SOCMotionVisuals.ParticleEmbers('hero-ember-canvas');
-    new SOCMotionVisuals.SecuritySphere3D('security-sphere-canvas');
-    SOCMotionVisuals.init3DCardTilt();
-  }
 });
 
 function animateHeader() {
@@ -69,7 +50,7 @@ function animateHeader() {
     `<span style="animation-delay:${i*0.08}s">${c}</span>`).join('');
 }
 
-/* ─── Drop Zone ───────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Drop Zone ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initDropZone() {
   const zone = $('drop-zone'), fileIn = $('file-input');
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
@@ -93,7 +74,7 @@ function initDropZone() {
 function readFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
   const hint = {csv:'csv',json:'json',jsonl:'jsonl',ndjson:'jsonl',log:'syslog',txt:'syslog',syslog:'syslog'}[ext]||null;
-  showLoading(true, `Reading ${sanitize(file.name)}…`);
+  showLoading(true, `Reading ${sanitize(file.name)}ÔÇª`);
   const reader = new FileReader();
   reader.onload = e => processText(e.target.result, hint, file.name);
   reader.onerror = () => showError('Failed to read file.');
@@ -101,12 +82,12 @@ function readFile(file) {
 }
 
 function processText(text, hint=null, filename='pasted text') {
-  showLoading(true, 'Parsing logs…');
+  showLoading(true, 'Parsing logsÔÇª');
   setTimeout(() => {
     try {
       const result = SOCParser.parseLogs(text, hint);
       State.raw = result;
-      showLoading(true, `Running ${SOCRules.RULES.length} rules + ${State.customRules.length} custom rules…`);
+      showLoading(true, `Running ${SOCRules.RULES.length} rules + ${State.customRules.length} custom rulesÔÇª`);
       setTimeout(() => {
         try {
           const builtinFindings = SOCRules.detectAll(result.records);
@@ -137,8 +118,8 @@ function initDemoButtons() {
   });
 }
 
-/* ─── Loading / Error ─────────────────────────────────────────────────────── */
-function showLoading(on, msg='Processing…') {
+/* ÔöÇÔöÇÔöÇ Loading / Error ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+function showLoading(on, msg='ProcessingÔÇª') {
   const el = $('loading-overlay');
   if (on) { $('loading-msg').textContent = msg; el.classList.add('active'); }
   else el.classList.remove('active');
@@ -154,7 +135,7 @@ function showSection(name) {
   const t = $(`section-${name}`); if (t) t.classList.add('active');
 }
 
-/* ─── Tabs ────────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Tabs ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initTabs() {
   $$('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -169,7 +150,7 @@ function initTabs() {
   });
 }
 
-/* ─── Search ──────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Search ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initSearch() {
   const input = $('search-input');
   let debounce;
@@ -191,7 +172,7 @@ function initSearch() {
   input.setAttribute('placeholder', 'Search: src_ip:10.0.0.1 | /regex/ | term AND term | NOT keyword  (Ctrl+K)');
 }
 
-/* ─── Severity Filter ─────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Severity Filter ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initSeverityFilter() {
   $$('[data-sev]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -204,7 +185,7 @@ function initSeverityFilter() {
   });
 }
 
-/* ─── Filter Logic ────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Filter Logic ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function applyFilters() {
   const filter = State.advancedFilter;
   State.filtered = (State.raw?.records || []).filter(ev => !filter || filter(ev));
@@ -217,7 +198,7 @@ function applyFilters() {
   });
 }
 
-/* ─── Dashboard ───────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Dashboard ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderDashboard(filename) {
   const r = State.raw;
   const sc = SOCRules.summarizeFindings(State.findings);
@@ -230,31 +211,12 @@ function renderDashboard(filename) {
     const el = $(`stat-${sev}`);
     if (el) el.textContent = (sc.counts[sev] || 0).toLocaleString();
   }
-  const elEvents = $('stat-events');
-  if (elEvents) elEvents.textContent = r.total.toLocaleString();
-  const elRules = $('stat-rules');
-  if (elRules) elRules.textContent = State.findings.length.toLocaleString();
+  $('stat-events').textContent = r.total.toLocaleString();
+  $('stat-rules').textContent  = State.findings.length.toLocaleString();
 
   const ts = State.threatScore;
   const tEl = $('stat-threat-score');
-  if (tEl && ts) {
-    tEl.textContent = ts.score;
-    tEl.style.color = ts.score >= 60 ? 'var(--critical)' : ts.score >= 40 ? 'var(--high)' : 'var(--gold)';
-  }
-
-  const navAlerts = $('nav-count-alerts');
-  if (navAlerts) navAlerts.textContent = State.findings.length;
-  const navEvents = $('nav-count-events');
-  if (navEvents) navEvents.textContent = r.total.toLocaleString();
-  const navIOCs = $('nav-count-iocs');
-  if (navIOCs && State.iocs) navIOCs.textContent = State.iocs.totalCount || 0;
-  const navChains = $('nav-count-chains');
-  if (navChains && State.correlations) navChains.textContent = State.correlations.length || 0;
-  const navRadar = $('nav-count-radar');
-  if (navRadar) navRadar.textContent = State.findings.length;
-
-  if (dashRadar) dashRadar.setFindings(State.findings);
-  if (heroRadar) heroRadar.setFindings(State.findings);
+  if (tEl) { tEl.textContent = ts.score; tEl.style.color = ts.score >= 60 ? '#ff3860' : ts.score >= 40 ? '#ff8c00' : '#00e5ff'; }
 
   updateSeverityBadges(sc.counts);
   renderCurrentTab();
@@ -263,7 +225,6 @@ function renderDashboard(filename) {
 function renderCurrentTab() {
   applyFilters();
   switch (State.activeTab) {
-    case 'radar':        renderRadar();        break;
     case 'alerts':       renderAlerts();       break;
     case 'events':       renderEvents();       break;
     case 'summary':      renderSummary();      break;
@@ -276,47 +237,6 @@ function renderCurrentTab() {
   }
 }
 
-function renderRadar() {
-  if (dashRadar) {
-    dashRadar.resize();
-    dashRadar.setFindings(State.findings);
-  }
-  const radarList = $('radar-threat-list');
-  if (!radarList) return;
-  const criticals = State.findings.filter(f => f.severity === 'critical' || f.severity === 'high');
-  radarList.innerHTML = (criticals.length ? criticals.slice(0, 8) : State.findings.slice(0, 8)).map(f => `
-    <div class="crule-item beam-card" style="cursor:pointer" onclick="filterByFindingId('${f.id}')">
-      <div class="crule-info">
-        <span class="sev-badge ${f.severity}">${f.severity.toUpperCase()}</span>
-        <strong style="color:var(--text-bright)">${sanitize(f.title)}</strong>
-        <span style="color:var(--text-muted);font-family:var(--mono);font-size:.7rem">${f.event?.src_ip || 'N/A'}</span>
-      </div>
-      <span class="badge" style="font-family:var(--mono)">${f.confidence}%</span>
-    </div>
-  `).join('') || '<p style="color:var(--text-muted);font-size:.8rem">No active threat vectors plotted.</p>';
-}
-
-window.filterByFindingId = function(id) {
-  const finding = State.findings.find(f => f.id === id);
-  if (finding) {
-    State.activeTab = 'alerts';
-    $$('.sb-nav-item, [data-tab]').forEach(b => {
-      b.classList.toggle('active', b.dataset.tab === 'alerts');
-      b.setAttribute('aria-selected', b.dataset.tab === 'alerts');
-    });
-    $$('.tab-panel').forEach(p => p.classList.remove('active'));
-    $('tab-alerts')?.classList.add('active');
-    $('search-input').value = finding.event?.src_ip || finding.ruleId || '';
-    State.searchQuery = $('search-input').value;
-    State.advancedFilter = SOCNeonAdvanced.buildSearchFilter(State.searchQuery);
-    applyFilters();
-    renderAlerts();
-  }
-};
-window.SOCNeonFilterByFinding = function(finding) {
-  if (finding) window.filterByFindingId(finding.id);
-};
-
 function updateSeverityBadges(counts) {
   $$('[data-sev]').forEach(btn => {
     const badge = btn.querySelector('.badge');
@@ -326,14 +246,14 @@ function updateSeverityBadges(counts) {
   });
 }
 
-/* ─── ALERTS TAB ──────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ ALERTS TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderAlerts() {
   const container = $('alerts-list');
   const findings  = State.filteredFindings;
   $('alerts-count').textContent = `${findings.length} alert${findings.length !== 1 ? 's' : ''}`;
 
   if (!findings.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><p>${State.searchQuery ? 'No alerts match filter.' : 'No suspicious activity detected.'}</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">Ô£à</div><p>${State.searchQuery ? 'No alerts match filter.' : 'No suspicious activity detected.'}</p></div>`;
     return;
   }
 
@@ -363,20 +283,20 @@ function renderAlerts() {
           <span class="confidence-pct">${f.confidence}%</span>
           ${f.timestamp ? `<time class="alert-time">${formatTime(f.timestamp)}</time>` : ''}
           <span class="category-tag">${sanitize(f.category)}</span>
-          <button class="btn-icon-sm" data-dismiss="${sanitize(f.id)}" title="Dismiss alert" aria-label="Dismiss">✕</button>
+          <button class="btn-icon-sm" data-dismiss="${sanitize(f.id)}" title="Dismiss alert" aria-label="Dismiss">Ô£ò</button>
         </div>
       </div>
       <div class="alert-body">
         <p class="alert-explain">${sanitize(f.explanation)}</p>
         ${evid ? `<div class="evidence-row">${evid}</div>` : ''}
         <div class="alert-actions">
-          <button class="btn-link raw-toggle" data-idx="${idx}">Show raw event ▾</button>
-          <button class="btn-link note-toggle" data-id="${sanitize(f.id)}">📝 Note</button>
-          ${f.event?.src_ip ? `<button class="btn-link pivot-ip" data-ip="${sanitize(f.event.src_ip)}">🔍 Pivot on ${sanitize(f.event.src_ip)}</button>` : ''}
+          <button class="btn-link raw-toggle" data-idx="${idx}">Show raw event Ôû¥</button>
+          <button class="btn-link note-toggle" data-id="${sanitize(f.id)}">­ƒôØ Note</button>
+          ${f.event?.src_ip ? `<button class="btn-link pivot-ip" data-ip="${sanitize(f.event.src_ip)}">­ƒöì Pivot on ${sanitize(f.event.src_ip)}</button>` : ''}
         </div>
         <pre class="raw-event" id="raw-${idx}" hidden>${sanitize(JSON.stringify(f.event?._raw || {}, null, 2)).slice(0,2000)}</pre>
         <div class="note-box" id="note-${sanitize(f.id)}" hidden>
-          <textarea class="note-input" placeholder="Add analysis note…" aria-label="Alert note">${sanitize(note)}</textarea>
+          <textarea class="note-input" placeholder="Add analysis noteÔÇª" aria-label="Alert note">${sanitize(note)}</textarea>
           <button class="btn btn-sm save-note" data-id="${sanitize(f.id)}">Save Note</button>
         </div>
       </div>
@@ -387,7 +307,7 @@ function renderAlerts() {
   container.querySelectorAll('.raw-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
       const pre = $(`raw-${btn.dataset.idx}`); const open = !pre.hidden;
-      pre.hidden = open; btn.textContent = open ? 'Show raw event ▾' : 'Hide raw event ▴';
+      pre.hidden = open; btn.textContent = open ? 'Show raw event Ôû¥' : 'Hide raw event Ôû┤';
     });
   });
   container.querySelectorAll('[data-dismiss]').forEach(btn => {
@@ -421,7 +341,7 @@ function renderAlerts() {
   });
 }
 
-/* ─── EVENTS TAB ──────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ EVENTS TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderEvents() {
   const events = State.filtered;
   const start  = (State.currentPage - 1) * State.pageSize;
@@ -431,7 +351,7 @@ function renderEvents() {
   $('events-count').textContent = `${events.length.toLocaleString()} event${events.length !== 1 ? 's' : ''}`;
 
   if (!events.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No events match the filter.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">­ƒô¡</div><p>No events match the filter.</p></div>`;
     renderPagination(0, 0); return;
   }
 
@@ -441,7 +361,7 @@ function renderEvents() {
   const findingEventSet = new Set(State.findings.map(f => f.event));
 
   const thead = `<thead><tr>${cols.map(c =>
-    `<th scope="col" class="sortable" data-col="${c}" tabindex="0">${sanitize(c.replace(/_/g,' '))} <span class="sort-icon">⇕</span></th>`
+    `<th scope="col" class="sortable" data-col="${c}" tabindex="0">${sanitize(c.replace(/_/g,' '))} <span class="sort-icon">Ôçò</span></th>`
   ).join('')}</tr></thead>`;
 
   const tbody = `<tbody>${page.map(ev => {
@@ -482,7 +402,7 @@ function renderEvents() {
   });
 }
 
-/* ─── SUMMARY TAB ─────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ SUMMARY TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderSummary() {
   if (!State.raw) return;
   const summary = SOCRules.summarizeFindings(State.findings);
@@ -514,14 +434,14 @@ function renderSummary() {
   }).join('') || '<p class="muted">No findings.</p>';
 
   const errSection = State.raw.errors.length ? `<div class="summary-card">
-    <h3>⚠ Parse Errors (${State.raw.errors.length})</h3>
+    <h3>ÔÜá Parse Errors (${State.raw.errors.length})</h3>
     <ul class="error-list">${State.raw.errors.slice(0,20).map(e=>`<li>Line ${sanitize(String(e.line))}: ${sanitize(e.error)}</li>`).join('')}</ul>
   </div>` : '';
 
   container.innerHTML = `<div class="summary-grid">
-    <div class="summary-card"><h3>🎯 Findings by Category</h3>${catRows}</div>
-    <div class="summary-card"><h3>🌐 Top Source IPs (Findings)</h3>${ipRows}</div>
-    <div class="summary-card full-width"><h3>📋 Rules Fired</h3>${ruleRows}</div>
+    <div class="summary-card"><h3>­ƒÄ» Findings by Category</h3>${catRows}</div>
+    <div class="summary-card"><h3>­ƒîÉ Top Source IPs (Findings)</h3>${ipRows}</div>
+    <div class="summary-card full-width"><h3>­ƒôï Rules Fired</h3>${ruleRows}</div>
     ${errSection}
   </div>`;
 
@@ -534,7 +454,7 @@ function renderSummary() {
   });
 }
 
-/* ─── TIMELINE TAB ────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ TIMELINE TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderTimeline() {
   const container = $('tab-timeline');
   if (!State.raw) return;
@@ -542,26 +462,26 @@ function renderTimeline() {
   container.innerHTML = `
     <div class="chart-section">
       <div class="chart-card">
-        <h3>📈 Event Timeline</h3>
+        <h3>­ƒôê Event Timeline</h3>
         <div class="chart-wrap"><canvas id="chart-timeline"></canvas></div>
       </div>
       <div class="chart-row">
         <div class="chart-card half">
-          <h3>🔵 Findings by Severity</h3>
+          <h3>­ƒöÁ Findings by Severity</h3>
           <div class="chart-wrap small"><canvas id="chart-donut"></canvas></div>
         </div>
         <div class="chart-card half">
-          <h3>🌡 24h Activity Heatmap</h3>
+          <h3>­ƒîí 24h Activity Heatmap</h3>
           <div class="chart-wrap small"><canvas id="chart-heatmap"></canvas></div>
         </div>
       </div>
       <div class="chart-row">
         <div class="chart-card half">
-          <h3>🎯 Threat Score</h3>
+          <h3>­ƒÄ» Threat Score</h3>
           <div class="chart-wrap small"><canvas id="chart-gauge"></canvas></div>
         </div>
         <div class="chart-card half">
-          <h3>📁 Top Categories</h3>
+          <h3>­ƒôü Top Categories</h3>
           <div class="chart-wrap small"><canvas id="chart-cats"></canvas></div>
         </div>
       </div>
@@ -581,7 +501,7 @@ function renderTimeline() {
   });
 }
 
-/* ─── IOCs TAB ────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ IOCs TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderIOCs() {
   const container = $('tab-iocs');
   const iocs = State.iocs;
@@ -593,15 +513,15 @@ function renderIOCs() {
     const body   = rows.map(r => `<tr>${r.map(c => `<td>${sanitize(String(c))}</td>`).join('')}</tr>`).join('');
     return `<div class="ioc-card">
       <div class="ioc-header"><h3>${title} <span class="badge">${rows.length}</span></h3>
-        <button class="btn btn-sm export-ioc-csv" data-title="${sanitize(title)}">⬇ CSV</button></div>
+        <button class="btn btn-sm export-ioc-csv" data-title="${sanitize(title)}">Ô¼ç CSV</button></div>
       <div class="table-scroll"><table class="events-table ioc-table"><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table></div>
     </div>`;
   }
 
   const ipRows = iocs.ips.slice(0,100).map(([ip,d]) => [
-    ip, d.private ? '🔒 Internal' : '🌐 External', d.count
+    ip, d.private ? '­ƒöÆ Internal' : '­ƒîÉ External', d.count
   ]);
-  const hashRows = iocs.hashes.slice(0,50).map(([h,d]) => [h.slice(0,20)+'…', d.type, d.count]);
+  const hashRows = iocs.hashes.slice(0,50).map(([h,d]) => [h.slice(0,20)+'ÔÇª', d.type, d.count]);
   const urlRows  = iocs.urls.slice(0,50).map(([u,d]) => [u.slice(0,60), d.count]);
   const userRows = iocs.users.slice(0,30).map(([u,d]) => [u, d.count]);
   const hostRows = iocs.hosts.slice(0,30).map(([h,d]) => [h, d.count]);
@@ -611,16 +531,16 @@ function renderIOCs() {
   container.innerHTML = `
     <div class="ioc-toolbar">
       <span class="events-count">IOCs auto-extracted from all events</span>
-      <button class="btn btn-sm" id="export-all-iocs">⬇ Export All IOCs (JSON)</button>
+      <button class="btn btn-sm" id="export-all-iocs">Ô¼ç Export All IOCs (JSON)</button>
     </div>
     <div class="ioc-grid">
-      ${iocTable('🌐 IP Addresses', ipRows, ['IP','Type','Events'])}
-      ${iocTable('🔗 URLs / Paths', urlRows, ['URL/Path','Events'])}
-      ${iocTable('🔑 File Hashes', hashRows, ['Hash (truncated)','Type','Events'])}
-      ${iocTable('👤 Usernames', userRows, ['Username','Events'])}
-      ${iocTable('💻 Hostnames', hostRows, ['Hostname','Events'])}
-      ${cveRows.length ? iocTable('🛡 CVEs Referenced', cveRows, ['CVE ID']) : ''}
-      ${emailRows.length ? iocTable('📧 Email Addresses', emailRows, ['Email']) : ''}
+      ${iocTable('­ƒîÉ IP Addresses', ipRows, ['IP','Type','Events'])}
+      ${iocTable('­ƒöù URLs / Paths', urlRows, ['URL/Path','Events'])}
+      ${iocTable('­ƒöæ File Hashes', hashRows, ['Hash (truncated)','Type','Events'])}
+      ${iocTable('­ƒæñ Usernames', userRows, ['Username','Events'])}
+      ${iocTable('­ƒÆ╗ Hostnames', hostRows, ['Hostname','Events'])}
+      ${cveRows.length ? iocTable('­ƒøí CVEs Referenced', cveRows, ['CVE ID']) : ''}
+      ${emailRows.length ? iocTable('­ƒôº Email Addresses', emailRows, ['Email']) : ''}
     </div>`;
 
   $('export-all-iocs').addEventListener('click', () => {
@@ -636,7 +556,7 @@ function renderIOCs() {
   });
 }
 
-/* ─── MITRE ATT&CK TAB ────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ MITRE ATT&CK TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderMITRE() {
   const container = $('tab-mitre');
   const mappings  = SOCNeonAdvanced.getMITREMappings(State.findings);
@@ -648,12 +568,12 @@ function renderMITRE() {
   container.innerHTML = `
     <div class="mitre-header">
       <div>
-        <h3>MITRE ATT&CK® Coverage</h3>
+        <h3>MITRE ATT&CK┬« Coverage</h3>
         <p class="muted">${firedCount} of ${totalCount} mapped techniques triggered by detected activity</p>
       </div>
       <div class="mitre-legend">
-        <span class="mitre-legend-item fired">⬛ Technique Detected</span>
-        <span class="mitre-legend-item">⬜ Not Detected</span>
+        <span class="mitre-legend-item fired">Ô¼ø Technique Detected</span>
+        <span class="mitre-legend-item">Ô¼£ Not Detected</span>
       </div>
     </div>
     <div class="mitre-matrix" role="grid" aria-label="MITRE ATT&CK Matrix">
@@ -686,8 +606,8 @@ function renderMITRE() {
       detail.innerHTML = `
         <div class="mitre-detail-card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
-            <h3>🎯 ${sanitize(tech.id)} — ${sanitize(tech.name)}</h3>
-            <button class="btn-icon-sm" id="close-mitre-detail">✕</button>
+            <h3>­ƒÄ» ${sanitize(tech.id)} ÔÇö ${sanitize(tech.name)}</h3>
+            <button class="btn-icon-sm" id="close-mitre-detail">Ô£ò</button>
           </div>
           <p class="muted">Tactics: ${sanitize(tech.tactics.join(', '))} | Rules: ${sanitize(tech.matchedRules.join(', '))} | ${related.length} findings</p>
           ${related.slice(0,5).map(f => `<div class="alert-card sev-${f.severity}" style="margin:.5rem 0">
@@ -702,14 +622,14 @@ function renderMITRE() {
   });
 }
 
-/* ─── CORRELATIONS TAB ────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ CORRELATIONS TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderCorrelations() {
   const container = $('tab-correlations');
   const chains    = State.correlations;
 
   if (!chains.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔗</div>
-      <p>No correlated attack chains detected.<br><span class="muted">Correlation requires ≥2 findings from the same source IP.</span></p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">­ƒöù</div>
+      <p>No correlated attack chains detected.<br><span class="muted">Correlation requires ÔëÑ2 findings from the same source IP.</span></p></div>`;
     return;
   }
 
@@ -728,8 +648,8 @@ function renderCorrelations() {
           <div class="chain-title">
             <span class="sev-dot" style="background:${cfg.color}"></span>
             <code class="chain-ip">${sanitize(chain.ip)}</code>
-            ${chain.isKillChain ? '<span class="kill-chain-badge">⚡ Kill Chain</span>' : ''}
-            <span class="chain-meta">${chain.findings.length} alerts · ${sanitize(dur)} · ${sanitize(chain.ruleIds.join(', '))}</span>
+            ${chain.isKillChain ? '<span class="kill-chain-badge">ÔÜí Kill Chain</span>' : ''}
+            <span class="chain-meta">${chain.findings.length} alerts ┬À ${sanitize(dur)} ┬À ${sanitize(chain.ruleIds.join(', '))}</span>
           </div>
           <div class="chain-cats">${chain.categories.map(c=>`<span class="category-tag">${sanitize(c)}</span>`).join('')}</div>
         </div>
@@ -749,7 +669,7 @@ function renderCorrelations() {
         <div class="chain-findings">
           ${chain.findings.map((f, fi) => `
             <div class="chain-finding">
-              <div class="chain-time">${f.timestamp ? formatTime(f.timestamp) : '—'}</div>
+              <div class="chain-time">${f.timestamp ? formatTime(f.timestamp) : 'ÔÇö'}</div>
               <div class="chain-connector">
                 <div class="chain-dot sev-${f.severity}"></div>
                 ${fi < chain.findings.length-1 ? '<div class="chain-line"></div>' : ''}
@@ -758,7 +678,7 @@ function renderCorrelations() {
                 <span class="sev-label" style="color:${SEV_CONFIG[f.severity]?.color||'#8892b0'};font-size:.7rem">${f.severity.toUpperCase()}</span>
                 <strong style="font-size:.85rem">${sanitize(f.title)}</strong>
                 <code class="rule-id">${sanitize(f.ruleId)}</code>
-                <p style="font-size:.78rem;color:#8892b0;margin:.15rem 0 0">${sanitize(f.explanation.slice(0,100))}…</p>
+                <p style="font-size:.78rem;color:#8892b0;margin:.15rem 0 0">${sanitize(f.explanation.slice(0,100))}ÔÇª</p>
               </div>
             </div>`).join('')}
         </div>
@@ -766,7 +686,7 @@ function renderCorrelations() {
     }).join('')}`;
 }
 
-/* ─── CUSTOM RULES TAB ────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ CUSTOM RULES TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initCustomRuleBuilder() {
   // Handled via renderCustomRules
 }
@@ -779,7 +699,7 @@ function renderCustomRules() {
     <div class="crules-layout">
       <!-- Builder form -->
       <div class="crule-builder">
-        <h3>⚙ Add Custom Rule</h3>
+        <h3>ÔÜÖ Add Custom Rule</h3>
         <div class="form-grid">
           <label class="form-label">Rule Name
             <input class="form-input" id="cr-name" placeholder="My custom rule" />
@@ -817,7 +737,7 @@ function renderCustomRules() {
         </div>
         <div style="display:flex;gap:.5rem;margin-top:.75rem">
           <button class="btn btn-primary" id="cr-add">+ Add Rule</button>
-          <button class="btn btn-sm" id="cr-test">🧪 Test on Loaded Events</button>
+          <button class="btn btn-sm" id="cr-test">­ƒº¬ Test on Loaded Events</button>
         </div>
         <div id="cr-test-result" class="cr-test-result" hidden></div>
       </div>
@@ -825,7 +745,7 @@ function renderCustomRules() {
       <!-- Existing rules -->
       <div class="crule-list">
         <div class="crule-list-header">
-          <h3>📋 Custom Rules (${rules.length})</h3>
+          <h3>­ƒôï Custom Rules (${rules.length})</h3>
           ${rules.length ? '<button class="btn btn-sm" id="cr-clear-all">Clear All</button>' : ''}
         </div>
         ${rules.length ? rules.map(r => `
@@ -837,7 +757,7 @@ function renderCustomRules() {
               <span class="muted">${sanitize(r.operator)}</span>
               <code class="rule-id">${sanitize(r.value)}</code>
             </div>
-            <button class="btn-icon-sm delete-crule" data-id="${r.id}" aria-label="Delete rule">🗑</button>
+            <button class="btn-icon-sm delete-crule" data-id="${r.id}" aria-label="Delete rule">­ƒùæ</button>
           </div>`).join('')
         : '<p class="muted" style="padding:.5rem">No custom rules yet. Add one above.</p>'}
       </div>
@@ -871,8 +791,8 @@ function renderCustomRules() {
     const res = $('cr-test-result');
     res.hidden = false;
     res.innerHTML = hits.length
-      ? `<span style="color:var(--accent3)">✅ ${hits.length} event${hits.length!==1?'s':''} matched</span>`
-      : `<span style="color:var(--text-muted)">⭕ No events matched</span>`;
+      ? `<span style="color:var(--accent3)">Ô£à ${hits.length} event${hits.length!==1?'s':''} matched</span>`
+      : `<span style="color:var(--text-muted)">Ô¡ò No events matched</span>`;
   });
 
   container.querySelectorAll('.delete-crule').forEach(btn => {
@@ -892,7 +812,7 @@ function renderCustomRules() {
   });
 }
 
-/* ─── REPORT TAB ──────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ REPORT TAB ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderReport() {
   const container = $('tab-report');
   if (!State.raw) {
@@ -904,16 +824,16 @@ function renderReport() {
 
   container.innerHTML = `
     <div class="report-toolbar">
-      <h3>📄 Security Report</h3>
+      <h3>­ƒôä Security Report</h3>
       <div style="display:flex;gap:.5rem">
-        <button class="btn" id="report-print">🖨 Print / Save PDF</button>
-        <button class="btn btn-primary" id="report-html">⬇ Export HTML</button>
+        <button class="btn" id="report-print">­ƒû¿ Print / Save PDF</button>
+        <button class="btn btn-primary" id="report-html">Ô¼ç Export HTML</button>
       </div>
     </div>
     <div class="report-preview">
       <div class="rp-header">
-        <h1>🛡 SOCNeon Security Report</h1>
-        <p class="muted">Generated: ${new Date().toLocaleString()} · Format: ${sanitize(State.raw.format)} · Events: ${State.raw.total.toLocaleString()}</p>
+        <h1>­ƒøí SOCNeon Security Report</h1>
+        <p class="muted">Generated: ${new Date().toLocaleString()} ┬À Format: ${sanitize(State.raw.format)} ┬À Events: ${State.raw.total.toLocaleString()}</p>
       </div>
       <div class="rp-score-row">
         <div class="rp-score-card" style="border-color:${sc.color}">
@@ -935,7 +855,7 @@ function renderReport() {
           <td><code>${sanitize(f.ruleId)}</code></td>
           <td>${sanitize(f.title)}</td>
           <td>${f.confidence}%</td>
-          <td style="font-size:.75rem;color:#8892b0">${f.timestamp ? formatTime(f.timestamp) : '—'}</td>
+          <td style="font-size:.75rem;color:#8892b0">${f.timestamp ? formatTime(f.timestamp) : 'ÔÇö'}</td>
         </tr>`).join('')}</tbody></table>
       </div>
       <div class="rp-section">
@@ -947,7 +867,7 @@ function renderReport() {
       <div class="rp-section">
         <h2>Top External IPs</h2>
         ${(State.iocs?.ips||[]).filter(([ip,d])=>!d.private).slice(0,10).map(([ip,d]) =>
-          `<code style="display:inline-block;margin:.15rem;padding:.2rem .5rem;background:var(--bg-card2);border-radius:4px;font-size:.8rem">${sanitize(ip)} ×${d.count}</code>`
+          `<code style="display:inline-block;margin:.15rem;padding:.2rem .5rem;background:var(--bg-card2);border-radius:4px;font-size:.8rem">${sanitize(ip)} ├ù${d.count}</code>`
         ).join('') || '<p class="muted">None</p>'}
       </div>
     </div>`;
@@ -959,22 +879,22 @@ function renderReport() {
   });
 }
 
-/* ─── Pagination ──────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Pagination ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function renderPagination(total, current) {
   const pages = Math.ceil(total / State.pageSize);
   const el = $('pagination');
   if (pages <= 1) { el.innerHTML=''; return; }
   const btns = pages <= 7
     ? Array.from({length:pages},(_,i)=>i+1)
-    : [1,2,'…',current-1,current,current+1,'…',pages-1,pages]
-        .filter((v,i,a)=>v==='…'||(v>=1&&v<=pages))
-        .filter((v,i,a)=>v!=='…'||a[i-1]!=='…');
+    : [1,2,'ÔÇª',current-1,current,current+1,'ÔÇª',pages-1,pages]
+        .filter((v,i,a)=>v==='ÔÇª'||(v>=1&&v<=pages))
+        .filter((v,i,a)=>v!=='ÔÇª'||a[i-1]!=='ÔÇª');
 
   el.innerHTML = `
-    <button class="page-btn" ${current===1?'disabled':''} data-page="${current-1}" aria-label="Previous">‹</button>
-    ${btns.map(p=>p==='…'?`<span class="page-ellipsis">…</span>`
+    <button class="page-btn" ${current===1?'disabled':''} data-page="${current-1}" aria-label="Previous">ÔÇ╣</button>
+    ${btns.map(p=>p==='ÔÇª'?`<span class="page-ellipsis">ÔÇª</span>`
       :`<button class="page-btn ${p===current?'active':''}" data-page="${p}">${p}</button>`).join('')}
-    <button class="page-btn" ${current===pages?'disabled':''} data-page="${current+1}" aria-label="Next">›</button>`;
+    <button class="page-btn" ${current===pages?'disabled':''} data-page="${current+1}" aria-label="Next">ÔÇ║</button>`;
 
   el.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -985,7 +905,7 @@ function renderPagination(total, current) {
   });
 }
 
-/* ─── Export ──────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Export ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initExport() {
   $('export-csv-alerts').addEventListener('click',  () => exportCSV(State.filteredFindings,'socneon-alerts'));
   $('export-json-alerts').addEventListener('click', () => exportJSON(State.filteredFindings,'socneon-alerts'));
@@ -1011,7 +931,7 @@ function download(filename, content, mime) {
   URL.revokeObjectURL(a.href);
 }
 
-/* ─── Helpers ─────────────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Helpers ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function formatTime(iso) {
   try { return new Date(iso).toLocaleString(undefined,{month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
   catch { return iso; }
@@ -1023,18 +943,16 @@ function formatDuration(ms) {
   return `${Math.round(ms/3600000)}h`;
 }
 
-/* ─── Theme & Shortcuts ───────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇ Theme & Shortcuts ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 function initThemeToggle() {
-  const toggle = () => {
+  const btn = $('theme-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
     document.body.classList.toggle('light-mode');
-    const isLight = document.body.classList.contains('light-mode');
-    const b1 = $('theme-toggle'), b2 = $('theme-toggle-dash');
-    if (b1) b1.textContent = isLight ? '🌙' : '☀️';
-    if (b2) b2.textContent = isLight ? '🌙 Dark' : '☀️ Theme';
+    btn.textContent = document.body.classList.contains('light-mode') ? '­ƒîÖ' : 'ÔÿÇ´©Å';
+    // Redraw charts if on timeline tab
     if (State.activeTab === 'timeline') renderTimeline();
-  };
-  $('theme-toggle')?.addEventListener('click', toggle);
-  $('theme-toggle-dash')?.addEventListener('click', toggle);
+  });
 }
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', e => {

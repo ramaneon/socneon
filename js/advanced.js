@@ -1,14 +1,14 @@
-/**
- * SOCNeon — advanced.js
- * IOC Extraction · MITRE ATT&CK Mapping · Threat Scoring
- * Correlation Engine · Custom Rules Engine · Report Generator
+﻿/**
+ * SOCNeon ÔÇö advanced.js
+ * IOC Extraction ┬À MITRE ATT&CK Mapping ┬À Threat Scoring
+ * Correlation Engine ┬À Custom Rules Engine ┬À Report Generator
  * Advanced Search Parser
  */
 'use strict';
 
 window.SOCNeonAdvanced = (() => {
 
-  /* ─── MITRE ATT&CK Data ───────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ MITRE ATT&CK Data ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   const MITRE_TACTICS = [
     { id: 'TA0043', name: 'Reconnaissance',      short: 'Recon' },
     { id: 'TA0001', name: 'Initial Access',       short: 'Init Access' },
@@ -24,7 +24,7 @@ window.SOCNeonAdvanced = (() => {
     { id: 'TA0040', name: 'Impact',               short: 'Impact' },
   ];
 
-  // technique → tactics mapping (only techniques relevant to our ruleset)
+  // technique ÔåÆ tactics mapping (only techniques relevant to our ruleset)
   const TECHNIQUES = [
     { id: 'T1595', name: 'Active Scanning',            tactics: ['TA0043'], rules: ['WEB-004','WEB-005'] },
     { id: 'T1190', name: 'Exploit Public-Facing App',  tactics: ['TA0001'], rules: ['WEB-001','WEB-002','WEB-003'] },
@@ -54,7 +54,7 @@ window.SOCNeonAdvanced = (() => {
     }));
   }
 
-  /* ─── IOC Extractor ───────────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ IOC Extractor ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   const RE_IPV4    = /\b((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)\b/g;
   const RE_DOMAIN  = /\b([a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?\.)+([a-z]{2,})\b/gi;
   const RE_MD5     = /\b[a-f0-9]{32}\b/gi;
@@ -71,7 +71,7 @@ window.SOCNeonAdvanced = (() => {
     'cdn.jsdelivr.net','cloudflare.com','amazonaws.com']);
 
   function extractIOCs(events) {
-    const ips      = new Map(); // ip → { count, isPrivate, seenIn[] }
+    const ips      = new Map(); // ip ÔåÆ { count, isPrivate, seenIn[] }
     const domains  = new Map();
     const hashes   = new Map();
     const urls     = new Map();
@@ -139,19 +139,18 @@ window.SOCNeonAdvanced = (() => {
     const sortMap = m => [...m.entries()].sort((a, b) => b[1].count - a[1].count);
 
     return {
-      ips:        sortMap(ips),
-      domains:    sortMap(domains),
-      hashes:     sortMap(hashes),
-      urls:       sortMap(urls),
-      users:      sortMap(users),
-      hosts:      sortMap(hosts),
-      emails:     [...emails],
-      cves:       [...cves],
-      totalCount: ips.size + domains.size + hashes.size + urls.size + users.size + hosts.size + emails.size + cves.size,
+      ips:     sortMap(ips),
+      domains: sortMap(domains),
+      hashes:  sortMap(hashes),
+      urls:    sortMap(urls),
+      users:   sortMap(users),
+      hosts:   sortMap(hosts),
+      emails:  [...emails],
+      cves:    [...cves],
     };
   }
 
-  /* ─── Threat Score ────────────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ Threat Score ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   function calculateThreatScore(findings, events) {
     if (!findings.length) return { score: 0, label: 'Clean', breakdown: {} };
 
@@ -180,7 +179,7 @@ window.SOCNeonAdvanced = (() => {
     return { score, label, breakdown, total: findings.length };
   }
 
-  /* ─── Correlation Engine ──────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ Correlation Engine ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   function correlateEvents(findings, events) {
     if (!findings.length) return [];
 
@@ -251,7 +250,7 @@ window.SOCNeonAdvanced = (() => {
     );
   }
 
-  /* ─── Custom Rules Engine ─────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ Custom Rules Engine ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   const CUSTOM_RULES_KEY = 'socneon_custom_rules';
 
   function loadCustomRules() {
@@ -305,14 +304,14 @@ window.SOCNeonAdvanced = (() => {
     return findings;
   }
 
-  /* ─── Advanced Search Parser ──────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ Advanced Search Parser ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   /**
    * Parses queries like:
-   *   src_ip:10.0.0.1         → field:value
-   *   NOT ssh                 → negation
-   *   attack OR scan          → OR logic
-   *   failed AND login        → AND logic (default)
-   *   /pattern/               → regex
+   *   src_ip:10.0.0.1         ÔåÆ field:value
+   *   NOT ssh                 ÔåÆ negation
+   *   attack OR scan          ÔåÆ OR logic
+   *   failed AND login        ÔåÆ AND logic (default)
+   *   /pattern/               ÔåÆ regex
    */
   function buildSearchFilter(query) {
     if (!query || !query.trim()) return () => true;
@@ -361,7 +360,7 @@ window.SOCNeonAdvanced = (() => {
     return ev => Object.values(ev).some(v => String(v).toLowerCase().includes(lower));
   }
 
-  /* ─── Report Generator ────────────────────────────────────────────────── */
+  /* ÔöÇÔöÇÔöÇ Report Generator ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
   function generateReport(state) {
     const { raw, findings, filtered } = state;
     const score = calculateThreatScore(findings, filtered);
@@ -370,20 +369,20 @@ window.SOCNeonAdvanced = (() => {
     const firedTechniques = mitreData.filter(t => t.fired);
     const now = new Date().toLocaleString();
 
-    const sevColors = { critical: '#c9504a', high: '#c47c2e', medium: '#a8943c', low: '#6aaa89', info: '#7a75a0' };
+    const sevColors = { critical: '#ff3860', high: '#ff8c00', medium: '#ffd700', low: '#00e5ff', info: '#8892b0' };
 
     const topAlerts = findings.slice(0, 15).map(f => `
       <tr>
-        <td style="color:${sevColors[f.severity] || '#ede8dc'};font-weight:700;white-space:nowrap">${f.severity.toUpperCase()}</td>
+        <td style="color:${sevColors[f.severity] || '#fff'};font-weight:700;white-space:nowrap">${f.severity.toUpperCase()}</td>
         <td><code style="font-size:11px">${f.ruleId}</code></td>
         <td>${f.title}</td>
         <td>${f.confidence}%</td>
-        <td style="font-size:11px;color:#7a75a0">${f.timestamp ? new Date(f.timestamp).toLocaleString() : '—'}</td>
+        <td style="font-size:11px;color:#8892b0">${f.timestamp ? new Date(f.timestamp).toLocaleString() : 'ÔÇö'}</td>
       </tr>`).join('');
 
     const topIPs = iocs.ips.slice(0, 10).map(([ip, data]) =>
       `<tr><td style="font-family:monospace">${ip}</td>
-           <td>${data.private ? 'Internal' : '<span style="color:#c9504a">External</span>'}</td>
+           <td>${data.private ? 'Internal' : '<span style="color:#ff3860">External</span>'}</td>
            <td>${data.count}</td></tr>`
     ).join('');
 
@@ -396,26 +395,25 @@ window.SOCNeonAdvanced = (() => {
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>SOCNeon Report — ${now}</title>
+<title>SOCNeon Report ÔÇö ${now}</title>
 <style>
-  body { font-family: 'Inter', system-ui, sans-serif; background: #09071a; color: #ede8dc; margin: 0; padding: 2.5rem; line-height: 1.6; }
-  h1 { color: #c9a55a; font-family: 'Playfair Display', Georgia, serif; font-size: 2.2rem; margin-bottom: .25rem; }
-  h2 { color: #b8b0d0; border-bottom: 1px solid #2a2545; padding-bottom: .5rem; font-size: 1.1rem; margin-top: 2rem; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: #100e22; border: 1px solid #2a2545; border-radius: 8px; overflow: hidden; }
-  th { background: #16132e; color: #b8b0d0; text-align: left; padding: .6rem .8rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
-  td { padding: .5rem .8rem; border-bottom: 1px solid #2a2545; font-size: .82rem; }
-  .score { font-size: 3.5rem; color: ${sevColors[score.score >= 80 ? 'critical' : score.score >= 60 ? 'high' : score.score >= 40 ? 'medium' : 'low'] || '#c9a55a'}; font-weight: 700; font-family: monospace; }
-  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 12px; font-size: .7rem; font-weight: 700; background: #2a2545; }
+  body { font-family: 'Segoe UI', sans-serif; background: #050a13; color: #e2e8f5; margin: 0; padding: 2rem; }
+  h1 { color: #00e5ff; font-size: 2rem; } h2 { color: #8892b0; border-bottom: 1px solid #1e2d4a; padding-bottom: .5rem; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  th { background: #0d1626; color: #8892b0; text-align: left; padding: .5rem .75rem; font-size: .75rem; text-transform: uppercase; }
+  td { padding: .45rem .75rem; border-bottom: 1px solid #1e2d4a; font-size: .85rem; }
+  .score { font-size: 4rem; color: ${sevColors[score.score >= 80 ? 'critical' : score.score >= 60 ? 'high' : score.score >= 40 ? 'medium' : 'low'] || '#00e5ff'}; font-weight: 700; }
+  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 12px; font-size: .7rem; font-weight: 700; background: #1e2d4a; }
   @media print { body { background: white; color: black; } th { background: #f0f0f0; color: #333; } }
 </style>
 </head>
 <body>
-<h1>🛡 SOCNeon Security Report</h1>
-<p style="color:#8892b0">Generated: ${now} | Format: ${raw?.format || '—'} | Events: ${raw?.total?.toLocaleString() || 0}</p>
+<h1>­ƒøí SOCNeon Security Report</h1>
+<p style="color:#8892b0">Generated: ${now} | Format: ${raw?.format || 'ÔÇö'} | Events: ${raw?.total?.toLocaleString() || 0}</p>
 
 <h2>Threat Score</h2>
 <div class="score">${score.score}/100</div>
-<p style="color:#8892b0">${score.label} — ${score.total} total findings</p>
+<p style="color:#8892b0">${score.label} ÔÇö ${score.total} total findings</p>
 
 <h2>Findings Summary</h2>
 <table>
@@ -428,13 +426,13 @@ ${['critical','high','medium','low','info'].map(s =>
 <h2>Top 15 Alerts</h2>
 <table><tr><th>Severity</th><th>Rule</th><th>Title</th><th>Confidence</th><th>Time</th></tr>${topAlerts}</table>
 
-<h2>Extracted IOCs — Top IPs</h2>
+<h2>Extracted IOCs ÔÇö Top IPs</h2>
 <table><tr><th>IP Address</th><th>Type</th><th>Event Count</th></tr>${topIPs || '<tr><td colspan="3">No IPs extracted</td></tr>'}</table>
 
 <h2>MITRE ATT&CK Coverage (${firedTechniques.length} techniques)</h2>
 <table><tr><th>Technique</th><th>Name</th><th>Rules</th><th>Findings</th></tr>${mitreRows || '<tr><td colspan="4">No techniques mapped</td></tr>'}</table>
 
-<p style="color:#4a5568;font-size:.75rem;margin-top:3rem">SOCNeon — All analysis is client-side. This report contains no external links or tracking.</p>
+<p style="color:#4a5568;font-size:.75rem;margin-top:3rem">SOCNeon ÔÇö All analysis is client-side. This report contains no external links or tracking.</p>
 </body></html>`;
 
     return html;

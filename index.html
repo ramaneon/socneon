@@ -1,421 +1,307 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mainframe®</title>
-  
-  <!-- Fonts -->
-  <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/5ac3fe7c6abd2f62067f266d89671492?family=HelveticaNowDisplay-Medium" type="text/css" />
-  <link rel="stylesheet" href="https://db.onlinewebfonts.com/c/1aa3377e489837a26d019bba501e779d?family=HelveticaNowDisplayW01-Rg" type="text/css" />
-
-  <!-- Tailwind CSS via CDN for instant, zero-build browser rendering -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    :root {
-      --font-heading: 'HelveticaNowDisplay-Medium', 'Helvetica Neue', Arial, sans-serif;
-      --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
-    }
-    
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font-body);
-      background-color: #000;
-      color: #fff;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* Video background positioning */
-    .bg-video {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      object-fit: cover;
-      object-position: 70% center;
-      pointer-events: none;
-    }
-
-    /* Cursor blink */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    .cursor-blink {
-      display: inline-block;
-      width: 2px;
-      height: 1.1em;
-      background-color: #fff;
-      vertical-align: middle;
-      margin-left: 2px;
-      animation: blink 1s step-end infinite;
-    }
-
-    /* Action pills fade-in animation */
-    .action-pills-container {
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .action-pills-container.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Pill button base */
-    .pill-btn-white {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #fff;
-      color: #000;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 9999px;
-      font-size: 13px;
-      padding: 0.3em 1rem;
-      margin: 0 0.2em 0.4em 0.2em;
-      white-space: nowrap;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background-color 0.2s, color 0.2s;
-    }
-    @media (min-width: 640px) {
-      .pill-btn-white {
-        font-size: 15px;
-        padding: 0.3em 1.25rem;
-      }
-    }
-    .pill-btn-white:hover {
-      background-color: #000;
-      color: #fff;
-    }
-
-    .pill-btn-outline {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      color: #fff;
-      border: 1px solid #fff;
-      border-radius: 9999px;
-      font-size: 13px;
-      padding: 0.3em 1rem;
-      margin: 0 0.2em 0.4em 0.2em;
-      white-space: nowrap;
-      cursor: pointer;
-      gap: 0.5rem;
-      transition: background-color 0.2s, color 0.2s;
-    }
-    @media (min-width: 640px) {
-      .pill-btn-outline {
-        font-size: 15px;
-        padding: 0.3em 1.25rem;
-        gap: 0.75rem;
-      }
-    }
-    .pill-btn-outline:hover {
-      background-color: #fff;
-      color: #000;
-    }
-
-    /* Copied toast */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(255, 255, 255, 0.95);
-      color: #000;
-      padding: 0.5rem 1.25rem;
-      border-radius: 9999px;
-      font-size: 14px;
-      font-weight: 500;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s, transform 0.25s;
-      z-index: 999;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-    .toast.active {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* Modal for SOC Analyzer tool */
-    .soc-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(12px);
-      overflow-y: auto;
-      padding: 2rem 1rem;
-    }
-    .soc-modal.active {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
+  <meta name="description" content="SOCNeon ÔÇö Privacy-first SOC Log Analyzer. Analyze security logs 100% in your browser. MITRE ATT&CK mapping, IOC extraction, correlation engine." />
+  <meta name="theme-color" content="#050a13" />
+  <title>SOCNeon ÔÇö Privacy-First SOC Log Analyzer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>­ƒøí´©Å</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
-<body class="select-none">
+<body>
 
-  <!-- ── BACKGROUND VIDEO (mouse-scrub controlled) ────────────────────────── -->
-  <video
-    id="bg-video"
-    class="bg-video"
-    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4"
-    muted
-    playsinline
-    preload="auto"
-  ></video>
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
+  <div class="spinner" aria-hidden="true"></div>
+  <p class="loading-msg" id="loading-msg">ProcessingÔÇª</p>
+</div>
 
-  <!-- ── NAVBAR (fixed, z-index: 10) ──────────────────────────────────────── -->
-  <header class="fixed top-0 left-0 w-full z-10 px-5 sm:px-8 py-4 sm:py-5 flex justify-between items-center">
-    
-    <!-- Logo (left) -->
-    <div class="flex items-center gap-3">
-      <span class="text-[21px] sm:text-[26px] tracking-tight text-white leading-none" style="font-family: var(--font-heading);">
-        Mainframe®
-      </span>
-      <span class="text-[25px] sm:text-[30px] text-white select-none leading-none" style="letter-spacing: -0.02em;" aria-hidden="true">
-        ✳︎
-      </span>
+<!-- Error Toast -->
+<div class="error-toast" id="error-toast" role="alert" aria-live="assertive">
+  <span aria-hidden="true">ÔÜá</span>
+  <span id="error-msg"></span>
+</div>
+
+<!-- Paste Modal -->
+<div class="modal" id="paste-modal" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title">
+  <div class="modal-box">
+    <h2 id="paste-modal-title">­ƒôï Paste Log Content</h2>
+    <textarea class="paste-textarea" id="paste-area"
+      placeholder="Paste CSV, JSON, JSONL, or syslog text hereÔÇª"
+      aria-label="Paste log content" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    <div class="modal-footer">
+      <button class="btn" id="paste-cancel">Cancel</button>
+      <button class="btn btn-primary" id="paste-confirm">Analyze ÔåÁ</button>
     </div>
+  </div>
+</div>
 
-    <!-- Desktop nav links (center, hidden below md) -->
-    <nav class="hidden md:flex items-center text-[23px] text-white">
-      <a href="#labs" class="hover:opacity-60 transition-opacity">Labs</a>
-      <span>,&nbsp;</span>
-      <a href="#studio" class="hover:opacity-60 transition-opacity">Studio</a>
-      <span>,&nbsp;</span>
-      <a href="#openings" class="hover:opacity-60 transition-opacity">Openings</a>
-      <span>,&nbsp;</span>
-      <a href="#shop" class="hover:opacity-60 transition-opacity">Shop</a>
-    </nav>
+<div class="app-wrapper">
 
-    <!-- Desktop CTA (right, hidden below md) -->
-    <div class="hidden md:block">
-      <a href="mailto:hello@mainframe.co" class="text-[23px] text-white underline underline-offset-2 hover:opacity-60 transition-opacity">
-        Get in touch
-      </a>
+  <!-- Header -->
+  <header class="app-header" role="banner">
+    <div class="brand">
+      <img src="assets/logo.jpg" alt="SOCNeon shield" class="brand-logo" width="36" height="36"
+           onerror="this.style.display='none'" />
+      <div>
+        <div class="brand-title" aria-label="SOCNeon">SOCNeon</div>
+        <div class="brand-subtitle">SOC Log Analyzer</div>
+      </div>
     </div>
-
-    <!-- Mobile hamburger (visible below md) -->
-    <button
-      id="hamburger-btn"
-      type="button"
-      class="md:hidden flex flex-col justify-center items-center gap-[5px] w-8 h-8 p-1 z-20 focus:outline-none cursor-pointer"
-      aria-label="Toggle navigation menu"
-      aria-expanded="false"
-    >
-      <span id="bar-top" class="w-6 h-[2px] bg-white transition-all duration-300 transform origin-center"></span>
-      <span id="bar-mid" class="w-6 h-[2px] bg-white transition-opacity duration-300"></span>
-      <span id="bar-bot" class="w-6 h-[2px] bg-white transition-all duration-300 transform origin-center"></span>
-    </button>
+    <div class="header-actions">
+      <div class="privacy-badge" title="Zero network requests. All analysis runs in your browser.">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        <span>100% Offline</span>
+      </div>
+      <button class="btn btn-sm btn-icon" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark">ÔÿÇ´©Å</button>
+    </div>
   </header>
 
-  <!-- ── MOBILE OVERLAY (z-index: 9) ──────────────────────────────────────── -->
-  <div
-    id="mobile-overlay"
-    class="fixed inset-0 bg-black/90 backdrop-blur-md z-[9] flex flex-col justify-center px-8 gap-8 transition-opacity duration-300 opacity-0 pointer-events-none md:hidden"
-  >
-    <a href="#labs" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Labs</a>
-    <a href="#studio" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Studio</a>
-    <a href="#openings" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Openings</a>
-    <a href="#shop" class="mobile-nav-link text-[32px] font-medium text-white hover:opacity-60 transition-opacity">Shop</a>
-    <a href="mailto:hello@mainframe.co" class="mobile-nav-link text-[32px] font-medium text-white underline underline-offset-4 hover:opacity-60 transition-opacity">Get in touch</a>
-  </div>
+  <main class="app-main">
 
-  <!-- ── HERO SECTION (z-index: 1) ─────────────────────────────────────────── -->
-  <main class="relative z-[1] w-full h-screen flex flex-col justify-end pb-12 md:justify-center md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden">
-    <div class="max-w-xl relative z-10">
-      
-      <!-- 1. Blurred intro label -->
-      <div
-        class="pointer-events-none select-none mb-5 sm:mb-6 text-white"
-        style="font-size: clamp(18px, 4vw, 26px); line-height: 1.3; font-weight: 400; filter: blur(4px);"
-      >
-        Hey there, meet A.R.I.A,<br />
-        Mainframe's Adaptive Response Interface Agent
+    <!-- ÔòÉÔòÉ LANDING ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="app-section active" id="section-landing" aria-labelledby="hero-heading">
+
+      <div class="landing-hero">
+        <h1 class="hero-title" id="hero-heading">SOCNeon</h1>
+        <p class="hero-sub">Privacy-first security log analysis, entirely in your browser.<br>No uploads. No accounts. No telemetry.</p>
+        <div class="hero-features" role="list">
+          <span class="feature-tag offline" role="listitem">ÔÜí Fully Offline</span>
+          <span class="feature-tag offline" role="listitem">­ƒôè CSV ┬À JSON ┬À JSONL ┬À Syslog</span>
+          <span class="feature-tag offline" role="listitem">­ƒÄ» 22 Detection Rules</span>
+          <span class="feature-tag offline" role="listitem">­ƒù║ MITRE ATT&amp;CK Mapping</span>
+          <span class="feature-tag offline" role="listitem">­ƒöù Correlation Engine</span>
+          <span class="feature-tag offline" role="listitem">­ƒÆë IOC Extraction</span>
+          <span class="feature-tag offline" role="listitem">ÔÜÖ Custom Rules Builder</span>
+          <span class="feature-tag offline" role="listitem">­ƒôä HTML Report Export</span>
+          <span class="feature-tag future"  role="listitem" title="Requires backend">­ƒö« Future: Live Threat Intel</span>
+          <span class="feature-tag future"  role="listitem" title="Requires backend">­ƒö« Future: SIEM Push</span>
+        </div>
       </div>
 
-      <!-- 2. Typewriter text -->
-      <p
-        id="typewriter-text"
-        class="text-white mb-5 sm:mb-6"
-        style="font-size: clamp(18px, 4vw, 26px); line-height: 1.35; font-weight: 400; min-height: 54px;"
-      >
-        <span id="typed-content"></span><span id="typewriter-cursor" class="cursor-blink" aria-hidden="true"></span>
-      </p>
-
-      <!-- 3. Action pill buttons -->
-      <div id="action-pills" class="action-pills-container flex flex-wrap gap-y-1">
-        
-        <!-- 4 white pill buttons -->
-        <button type="button" class="pill-btn-white" onclick="handlePillClick('Pitch us an idea')">
-          Pitch us an idea
-        </button>
-
-        <button type="button" class="pill-btn-white" onclick="handlePillClick('Come work here')">
-          Come work here
-        </button>
-
-        <button type="button" class="pill-btn-white" onclick="handlePillClick('Send a brief hello')">
-          Send a brief hello
-        </button>
-
-        <button type="button" class="pill-btn-white" onclick="handlePillClick('See how we operate')">
-          See how we operate
-        </button>
-
-        <!-- 1 outline pill button -->
-        <button
-          type="button"
-          id="copy-email-btn"
-          class="pill-btn-outline"
-          title="Click to copy email address"
-        >
-          <span>Reach us: <span class="underline underline-offset-1">hello@mainframe.co</span></span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-        </button>
-
+      <div class="upload-area">
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
+             aria-label="Drop log file here or click to browse">
+          <div class="drop-icon" aria-hidden="true">­ƒøí´©Å</div>
+          <div class="drop-title">Drop your log file here</div>
+          <p class="drop-sub">or click to browse ÔÇö your file never leaves this tab</p>
+          <div class="format-chips">
+            <span class="chip chip-csv">.csv</span>
+            <span class="chip chip-json">.json</span>
+            <span class="chip chip-jsonl">.jsonl / .ndjson</span>
+            <span class="chip chip-syslog">.log / syslog</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.75rem;flex-wrap:wrap">
+          <input type="file" id="file-input" accept=".csv,.json,.jsonl,.ndjson,.log,.txt,.syslog" style="display:none" aria-hidden="true" />
+          <button class="btn" id="paste-btn">­ƒôï Paste Text</button>
+        </div>
       </div>
 
-    </div>
+      <div class="demo-section">
+        <h2>ÔÇö Try with demo data ÔÇö</h2>
+        <div class="demo-buttons">
+          <button class="btn btn-sm" data-demo="csv"><span class="chip chip-csv" style="padding:.1rem .4rem;margin-right:.3rem">CSV</span>Firewall + Auth Logs</button>
+          <button class="btn btn-sm" data-demo="json"><span class="chip chip-json" style="padding:.1rem .4rem;margin-right:.3rem">JSON</span>ECS / Elastic Format</button>
+          <button class="btn btn-sm" data-demo="jsonl"><span class="chip chip-jsonl" style="padding:.1rem .4rem;margin-right:.3rem">JSONL</span>Web Access Logs</button>
+          <button class="btn btn-sm" data-demo="syslog"><span class="chip chip-syslog" style="padding:.1rem .4rem;margin-right:.3rem">SYSLOG</span>RFC 3164 Mixed</button>
+        </div>
+      </div>
+
+      <div class="feature-cards">
+        <div class="feat-card offline-card">
+          <div class="feat-icon">­ƒöÆ</div>
+          <div class="feat-title">Privacy First</div>
+          <div class="feat-desc">Zero network requests. Works air-gapped. Source auditable on GitHub.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">ÔÜí</div>
+          <div class="feat-title">Explainable Rules</div>
+          <div class="feat-desc">Every alert shows rule ID, confidence %, plain-English explanation, and evidence fields.</div>
+        </div>
+        <div class="feat-card mitre-card">
+          <div class="feat-icon">­ƒù║</div>
+          <div class="feat-title">MITRE ATT&amp;CK</div>
+          <div class="feat-desc">Detected techniques mapped to ATT&amp;CK tactics ÔÇö interactive clickable grid.</div>
+        </div>
+        <div class="feat-card corr-card">
+          <div class="feat-icon">­ƒöù</div>
+          <div class="feat-title">Attack Chains</div>
+          <div class="feat-desc">Correlate events by source IP, identify kill chain progression across tactics.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">­ƒö«</div>
+          <div class="feat-title">Future Backend</div>
+          <div class="feat-desc">Live threat intel, SIEM push, AI enrichment require a backend API ÔÇö clearly marked.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ÔòÉÔòÉ DASHBOARD ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="app-section" id="section-dashboard" aria-labelledby="dash-heading">
+      <h2 id="dash-heading" class="sr-only">Analysis Dashboard</h2>
+
+      <!-- Toolbar -->
+      <div class="dash-toolbar">
+        <div class="meta-bar">
+          <span class="meta-item">­ƒôü <strong id="meta-filename">ÔÇö</strong></span>
+          <span class="meta-item">Format: <strong id="meta-format">ÔÇö</strong></span>
+          <span class="meta-item">Events: <strong id="meta-total">0</strong></span>
+          <span class="meta-item">Errors: <strong id="meta-errors">0</strong></span>
+        </div>
+        <button class="btn btn-sm" onclick="showSection('landing')">ÔåÉ New File</button>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stat-grid" role="list">
+        <div class="stat-card critical" role="listitem">
+          <div class="stat-number" id="stat-critical">0</div>
+          <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-card high" role="listitem">
+          <div class="stat-number" id="stat-high">0</div>
+          <div class="stat-label">High</div>
+        </div>
+        <div class="stat-card medium" role="listitem">
+          <div class="stat-number" id="stat-medium">0</div>
+          <div class="stat-label">Medium</div>
+        </div>
+        <div class="stat-card low" role="listitem">
+          <div class="stat-number" id="stat-low">0</div>
+          <div class="stat-label">Low</div>
+        </div>
+        <div class="stat-card events" role="listitem">
+          <div class="stat-number" id="stat-events">0</div>
+          <div class="stat-label">Events</div>
+        </div>
+        <div class="stat-card rules" role="listitem">
+          <div class="stat-number" id="stat-rules">0</div>
+          <div class="stat-label">Findings</div>
+        </div>
+        <div class="stat-card threat" role="listitem">
+          <div class="stat-number" id="stat-threat-score">ÔÇö</div>
+          <div class="stat-label">Threat Score</div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem">
+        <div class="search-wrap" role="search">
+          <span class="search-icon" aria-hidden="true">­ƒöì</span>
+          <input type="search" class="search-input" id="search-input"
+            placeholder="Search (Ctrl+K)" aria-label="Advanced search" autocomplete="off" spellcheck="false" />
+          <span class="kbd-hint" aria-hidden="true">Ctrl+K</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <nav class="tabs-bar" role="tablist" aria-label="Dashboard sections">
+        <button class="tab-btn active" role="tab" data-tab="alerts"       aria-controls="tab-alerts"       aria-selected="true">­ƒÜ¿ Alerts</button>
+        <button class="tab-btn"        role="tab" data-tab="events"       aria-controls="tab-events"       aria-selected="false">­ƒôï Events</button>
+        <button class="tab-btn"        role="tab" data-tab="summary"      aria-controls="tab-summary"      aria-selected="false">­ƒôè Summary</button>
+        <button class="tab-btn"        role="tab" data-tab="timeline"     aria-controls="tab-timeline"     aria-selected="false">­ƒôê Timeline</button>
+        <button class="tab-btn"        role="tab" data-tab="iocs"         aria-controls="tab-iocs"         aria-selected="false">­ƒÆë IOCs</button>
+        <button class="tab-btn"        role="tab" data-tab="mitre"        aria-controls="tab-mitre"        aria-selected="false">­ƒù║ MITRE</button>
+        <button class="tab-btn"        role="tab" data-tab="correlations" aria-controls="tab-correlations" aria-selected="false">­ƒöù Chains</button>
+        <button class="tab-btn"        role="tab" data-tab="rules"        aria-controls="tab-rules"        aria-selected="false">ÔÜÖ Rules</button>
+        <button class="tab-btn"        role="tab" data-tab="report"       aria-controls="tab-report"       aria-selected="false">­ƒôä Report</button>
+      </nav>
+
+      <!-- ÔöÇÔöÇ ALERTS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel active" id="tab-alerts" role="tabpanel">
+        <div class="sev-filters" role="group" aria-label="Filter by severity">
+          <button class="sev-btn active" data-sev="all">All <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="critical">­ƒö┤ Critical <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="high">­ƒƒá High <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="medium">­ƒƒí Medium <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="low">­ƒöÁ Low <span class="badge">0</span></button>
+          <button class="sev-btn" data-sev="info">ÔÜ¬ Info <span class="badge">0</span></button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+          <span id="alerts-count" class="events-count">0 alerts</span>
+          <div class="export-group">
+            <button class="btn btn-sm" id="export-csv-alerts">Ô¼ç CSV</button>
+            <button class="btn btn-sm" id="export-json-alerts">Ô¼ç JSON</button>
+          </div>
+        </div>
+        <div id="alerts-list" aria-live="polite"></div>
+      </div>
+
+      <!-- ÔöÇÔöÇ EVENTS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-events" role="tabpanel">
+        <div class="events-toolbar">
+          <span id="events-count" class="events-count">0 events</span>
+          <div class="export-group">
+            <button class="btn btn-sm" id="export-csv-events">Ô¼ç CSV</button>
+            <button class="btn btn-sm" id="export-json-events">Ô¼ç JSON</button>
+          </div>
+        </div>
+        <div id="events-table-wrap" aria-live="polite"></div>
+        <nav id="pagination" class="pagination" aria-label="Events pagination"></nav>
+      </div>
+
+      <!-- ÔöÇÔöÇ SUMMARY ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-summary" role="tabpanel">
+        <div id="summary-content" aria-live="polite"></div>
+      </div>
+
+      <!-- ÔöÇÔöÇ TIMELINE ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-timeline" role="tabpanel">
+        <!-- rendered by renderTimeline() -->
+      </div>
+
+      <!-- ÔöÇÔöÇ IOCs ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-iocs" role="tabpanel">
+        <!-- rendered by renderIOCs() -->
+      </div>
+
+      <!-- ÔöÇÔöÇ MITRE ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-mitre" role="tabpanel">
+        <!-- rendered by renderMITRE() -->
+      </div>
+
+      <!-- ÔöÇÔöÇ CORRELATIONS ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-correlations" role="tabpanel">
+        <!-- rendered by renderCorrelations() -->
+      </div>
+
+      <!-- ÔöÇÔöÇ CUSTOM RULES ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-rules" role="tabpanel">
+        <!-- rendered by renderCustomRules() -->
+      </div>
+
+      <!-- ÔöÇÔöÇ REPORT ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ -->
+      <div class="tab-panel" id="tab-report" role="tabpanel">
+        <!-- rendered by renderReport() -->
+      </div>
+
+    </section>
+
   </main>
 
-  <!-- Copied Toast -->
-  <div id="toast" class="toast">Copied hello@mainframe.co to clipboard</div>
+  <footer class="app-footer" role="contentinfo">
+    <div><strong>SOCNeon</strong> &nbsp;┬À&nbsp; 100% client-side &nbsp;┬À&nbsp;
+      <span class="offline-badge">ÔÜí Offline-ready</span>
+    </div>
+    <div class="footer-links">
+      <span><kbd class="kbd">Ctrl+K</kbd> search &nbsp;<kbd class="kbd">Ctrl+O</kbd> open &nbsp;<kbd class="kbd">Esc</kbd> close</span>
+      <span style="color:var(--text-muted)">v2.0.0</span>
+    </div>
+  </footer>
 
-  <script>
-    // ── 1. Video mouse-scrub controller ────────────────────────────────────
-    const video = document.getElementById('bg-video');
-    let prevX = null;
-    let targetTime = 0;
-    let isSeeking = false;
-    const SENSITIVITY = 0.8;
+</div><!-- /app-wrapper -->
 
-    window.addEventListener('mousemove', (e) => {
-      if (!video || !video.duration || isNaN(video.duration)) return;
+<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
 
-      if (prevX === null) {
-        prevX = e.clientX;
-        targetTime = video.currentTime;
-        return;
-      }
-
-      const delta = e.clientX - prevX;
-      prevX = e.clientX;
-
-      const timeDelta = (delta / window.innerWidth) * SENSITIVITY * video.duration;
-      targetTime = Math.max(0, Math.min(video.duration, targetTime + timeDelta));
-
-      if (!isSeeking) {
-        isSeeking = true;
-        video.currentTime = targetTime;
-      }
-    });
-
-    video.addEventListener('seeked', () => {
-      if (!video || !video.duration) return;
-      if (Math.abs(video.currentTime - targetTime) > 0.04) {
-        video.currentTime = targetTime;
-      } else {
-        isSeeking = false;
-      }
-    });
-
-    // ── 2. Typewriter Effect ────────────────────────────────────────────────
-    const fullText = "Glad you stopped in. Good taste tends to find us. Now, what are we building?";
-    const typedContentEl = document.getElementById('typed-content');
-    const cursorEl = document.getElementById('typewriter-cursor');
-    const SPEED = 38;
-    const START_DELAY = 600;
-
-    let charIndex = 0;
-    setTimeout(() => {
-      const typeInterval = setInterval(() => {
-        if (charIndex < fullText.length) {
-          typedContentEl.textContent = fullText.slice(0, charIndex + 1);
-          charIndex++;
-        } else {
-          clearInterval(typeInterval);
-          if (cursorEl) cursorEl.style.display = 'none'; // cursor disappears when done
-        }
-      }, SPEED);
-    }, START_DELAY);
-
-    // ── 3. Action Pill Buttons Animation (400ms after load) ─────────────────
-    setTimeout(() => {
-      const pills = document.getElementById('action-pills');
-      if (pills) pills.classList.add('visible');
-    }, 400);
-
-    // ── 4. Copy Email Handler ──────────────────────────────────────────────
-    const copyBtn = document.getElementById('copy-email-btn');
-    const toast = document.getElementById('toast');
-
-    copyBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigator.clipboard.writeText('hello@mainframe.co').then(() => {
-        toast.classList.add('active');
-        setTimeout(() => toast.classList.remove('active'), 2000);
-      });
-    });
-
-    function handlePillClick(label) {
-      window.location.href = "mailto:hello@mainframe.co?subject=" + encodeURIComponent(label);
-    }
-
-    // ── 5. Mobile Hamburger Navigation ─────────────────────────────────────
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const mobileOverlay = document.getElementById('mobile-overlay');
-    const barTop = document.getElementById('bar-top');
-    const barMid = document.getElementById('bar-mid');
-    const barBot = document.getElementById('bar-bot');
-    let menuOpen = false;
-
-    function toggleMenu(open) {
-      menuOpen = open !== undefined ? open : !menuOpen;
-      hamburgerBtn.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
-
-      if (menuOpen) {
-        barTop.style.transform = 'rotate(45deg) translateY(7px)';
-        barMid.style.opacity = '0';
-        barBot.style.transform = 'rotate(-45deg) translateY(-7px)';
-        mobileOverlay.classList.remove('opacity-0', 'pointer-events-none');
-        mobileOverlay.classList.add('opacity-100', 'pointer-events-auto');
-      } else {
-        barTop.style.transform = '';
-        barMid.style.opacity = '1';
-        barBot.style.transform = '';
-        mobileOverlay.classList.remove('opacity-100', 'pointer-events-auto');
-        mobileOverlay.classList.add('opacity-0', 'pointer-events-none');
-      }
-    }
-
-    hamburgerBtn.addEventListener('click', () => toggleMenu());
-    document.querySelectorAll('.mobile-nav-link').forEach(link => {
-      link.addEventListener('click', () => toggleMenu(false));
-    });
-  </script>
-
+<script src="js/parser.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/demo-data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/advanced.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
