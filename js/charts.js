@@ -1,5 +1,5 @@
-﻿/**
- * SOCNeon ÔÇö charts.js
+/**
+ * SOCNeon — charts.js
  * Pure Canvas-based charts. Zero dependencies.
  * Exports: window.SOCNeonCharts
  */
@@ -45,7 +45,7 @@ window.SOCNeonCharts = (() => {
     ctx.closePath();
   }
 
-  /* ÔöÇÔöÇÔöÇ Timeline Chart ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── Timeline Chart ──────────────────────────────────────────────────── */
   function drawTimeline(canvasId, events, findings) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -154,7 +154,7 @@ window.SOCNeonCharts = (() => {
     ctx.fillText('Flagged', pad.l + 91, 12);
   }
 
-  /* ÔöÇÔöÇÔöÇ Severity Donut ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── Severity Donut ──────────────────────────────────────────────────── */
   function drawDonut(canvasId, counts) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -229,7 +229,7 @@ window.SOCNeonCharts = (() => {
     });
   }
 
-  /* ÔöÇÔöÇÔöÇ Horizontal Bar Chart ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── Horizontal Bar Chart ────────────────────────────────────────────── */
   function drawHBar(canvasId, data, opts = {}) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -276,7 +276,7 @@ window.SOCNeonCharts = (() => {
     });
   }
 
-  /* ÔöÇÔöÇÔöÇ 24h Activity Heatmap ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── 24h Activity Heatmap ────────────────────────────────────────────── */
   function drawHeatmap(canvasId, events) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -331,10 +331,10 @@ window.SOCNeonCharts = (() => {
     ctx.fillStyle = C.critical + 'aa';
     ctx.font = '9px Inter, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('Ôû▓ off-hours risk zone (0ÔÇô5h)', pad.l, pad.t - 8);
+    ctx.fillText('▲ off-hours risk zone (0–5h)', pad.l, pad.t - 8);
   }
 
-  /* ÔöÇÔöÇÔöÇ Threat Score Gauge ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── Threat Score Gauge ──────────────────────────────────────────────── */
   function drawGauge(canvasId, score, label = '') {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -405,7 +405,7 @@ window.SOCNeonCharts = (() => {
     }
   }
 
-  /* ÔöÇÔöÇÔöÇ Mini Sparkline ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+  /* ─── Mini Sparkline ──────────────────────────────────────────────────── */
   function drawSparkline(canvasId, values, color = C.accent) {
     const canvas = document.getElementById(canvasId);
     if (!canvas || values.length < 2) return;

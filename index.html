@@ -17,11 +17,13 @@
 <!-- PARTICLE CANVAS (MotionSites ambient BG) -->
 <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
-<!-- Loading Overlay -->
+<!-- 3D Holographic Gyroscope Loader Overlay -->
 <div class="loading-overlay" id="loading-overlay" role="status" aria-live="polite">
-  <div class="loader-ring" aria-hidden="true">
-    <div class="loader-ring-inner"></div>
-    <div class="loader-shield">🛡️</div>
+  <div class="loader-gyro-3d" aria-hidden="true">
+    <div class="gyro-ring-x"></div>
+    <div class="gyro-ring-y"></div>
+    <div class="gyro-ring-z"></div>
+    <div class="gyro-core">🛡️</div>
   </div>
   <p class="loading-msg" id="loading-msg">Processing…</p>
 </div>
@@ -308,6 +310,7 @@
 <script src="js/advanced.js"></script>
 <script src="js/app.js"></script>
 <script src="js/globe3d.js"></script>
+<script src="js/cursor3d.js"></script>
 
 <script>
 (function() {
