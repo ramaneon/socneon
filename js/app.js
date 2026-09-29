@@ -139,18 +139,27 @@ function showSection(name) {
   $$('.app-section').forEach(s => s.classList.remove('active'));
   const t = $(`section-${name}`); if (t) t.classList.add('active');
 }
+window.showSection = showSection;
+
+function showTab(tabName) {
+  State.activeTab = tabName;
+  $$('[data-tab]').forEach(b => {
+    const isTarget = b.dataset.tab === tabName;
+    b.classList.toggle('active', isTarget);
+    b.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+  });
+  $$('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = $(`tab-${tabName}`);
+  if (panel) panel.classList.add('active');
+  renderCurrentTab();
+}
+window.showTab = showTab;
 
 /* ─── Tabs ────────────────────────────────────────────────────────────────── */
 function initTabs() {
   $$('[data-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
-      State.activeTab = btn.dataset.tab;
-      $$('[data-tab]').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
-      btn.classList.add('active'); btn.setAttribute('aria-selected','true');
-      $$('.tab-panel').forEach(p => p.classList.remove('active'));
-      const panel = $(`tab-${btn.dataset.tab}`);
-      if (panel) panel.classList.add('active');
-      renderCurrentTab();
+      showTab(btn.dataset.tab);
     });
   });
 }
@@ -970,9 +979,22 @@ function formatDuration(ms) {
 function initThemeToggle() {
   const btn = $('theme-toggle');
   if (!btn) return;
+
+  // Always default to dark mode unless user explicitly selected light
+  const saved = localStorage.getItem('socneon-theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+    btn.textContent = '🌙';
+  } else {
+    document.body.classList.remove('light-mode');
+    btn.textContent = '☀️';
+  }
+
   btn.addEventListener('click', () => {
     document.body.classList.toggle('light-mode');
-    btn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    const isLight = document.body.classList.contains('light-mode');
+    btn.textContent = isLight ? '🌙' : '☀️';
+    localStorage.setItem('socneon-theme', isLight ? 'light' : 'dark');
     // Redraw charts if on timeline tab
     if (State.activeTab === 'timeline') renderTimeline();
   });
@@ -985,54 +1007,58 @@ function initKeyboardShortcuts() {
   });
 }
 
-/* ─── Killer Features: Copilot, SIEM & Playbook Rendering ───────────────── */
+/* ─── Killer Features: Neon AI [Under Development], SIEM & Playbook ─────── */
 function renderCopilot() {
   const container = $('copilot-content');
-  if (!container || !window.SOCKillerFeatures) return;
-
-  const data = SOCKillerFeatures.runCopilotAnalysis(State.findings, State.raw?.records || [], State.iocs, State.threatScore);
+  if (!container) return;
 
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:1100px;margin:0 auto;padding:1rem 0;">
-      <!-- Hero AI Verdict Card -->
-      <div style="background:var(--bg-card);border:1px solid #00e5ff;border-radius:var(--radius-lg);padding:1.5rem;position:relative;overflow:hidden;box-shadow:0 0 25px rgba(0,229,255,0.15);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-          <div style="display:flex;align-items:center;gap:0.75rem;">
-            <span style="font-size:1.8rem;">🤖</span>
-            <div>
-              <h2 style="font-size:1.25rem;font-weight:700;color:#00ff9d;">AI Forensic Investigation Copilot</h2>
-              <p style="font-size:0.75rem;color:var(--text-sec);">Automated Triaged Analysis · MITRE Alignment · Containment Playbooks</p>
-            </div>
-          </div>
-          <span style="padding:0.4rem 0.8rem;border-radius:100px;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;background:rgba(255,56,96,0.15);border:1px solid #ff3860;color:#ff3860;">
-            ${sanitize(data.verdict)}
-          </span>
+      <!-- Hero Neon AI Under Development Banner -->
+      <div style="background:var(--bg-card);border:1.5px solid rgba(255,127,0,0.4);border-radius:var(--radius-lg);padding:2rem;position:relative;overflow:hidden;box-shadow:0 0 30px rgba(255,127,0,0.12);">
+        <div style="position:absolute;top:0;right:0;background:linear-gradient(135deg,#ff7f00,#ff3860);color:#fff;font-size:0.7rem;font-weight:800;letter-spacing:0.1em;padding:0.35rem 1.25rem;border-bottom-left-radius:12px;text-transform:uppercase;">
+          🚧 Under Active Development
         </div>
-        <p style="font-size:0.95rem;color:var(--text-primary);line-height:1.65;background:rgba(0,0,0,0.25);border-radius:var(--radius);padding:1rem;border-left:3px solid #00e5ff;">
-          ${sanitize(data.summary)}
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;">
+          <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,127,0,0.15);border:1px solid #ff7f00;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 0 15px rgba(255,127,0,0.3);">
+            ⚡
+          </div>
+          <div>
+            <h2 style="font-size:1.5rem;font-weight:800;color:#ff7f00;letter-spacing:-0.02em;">Neon AI — Autonomous SOC Copilot</h2>
+            <p style="font-size:0.85rem;color:var(--text-sec);margin-top:2px;">Local LLM Security Model & Autonomous Root-Cause Investigation</p>
+          </div>
+        </div>
+
+        <p style="font-size:0.95rem;color:var(--text-primary);line-height:1.7;background:rgba(0,0,0,0.3);border-radius:var(--radius);padding:1.25rem;border-left:3px solid #ff7f00;margin-bottom:1.5rem;">
+          <strong>Notice:</strong> We are currently training and benchmarking the <strong>Neon AI Engine</strong>. This feature is under heavy development and will run privacy-first local/backend LLM inference to automatically explain attack telemetry, calculate false-positive probabilities, and orchestrate zero-touch remediation.
         </p>
-      </div>
 
-      <!-- Containment Actions & Live Remediation -->
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;">
-        <h3 style="color:#ffd700;display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;font-size:0.95rem;">
-          🛡 Instant Incident Containment Checklist (Playbook)
-        </h3>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;">
-          ${data.containment.map((c, i) => `
-            <li style="display:flex;align-items:flex-start;gap:0.75rem;font-size:0.88rem;color:var(--text-primary);background:var(--bg-card2);padding:0.75rem;border-radius:var(--radius);border:1px solid var(--border);">
-              <span style="background:#00e5ff;color:#000;font-weight:700;font-size:0.7rem;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</span>
-              <span>${sanitize(c)}</span>
-            </li>
-          `).join('')}
-        </ul>
-      </div>
+        <!-- Development Roadmap Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1rem;margin-bottom:1.5rem;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;">
+            <div style="color:#00e5ff;font-size:0.8rem;font-weight:700;margin-bottom:0.4rem;">PHASE 1 · IN PROGRESS</div>
+            <strong style="color:var(--text-primary);font-size:0.9rem;display:block;margin-bottom:0.4rem;">Natural Language Log Querying</strong>
+            <p style="font-size:0.78rem;color:var(--text-sec);">Ask questions in plain English: "Show me all failed SSH logins from Russian subnets after 2 AM".</p>
+          </div>
+          <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;">
+            <div style="color:#ffd700;font-size:0.8rem;font-weight:700;margin-bottom:0.4rem;">PHASE 2 · BENCHMARKING</div>
+            <strong style="color:var(--text-primary);font-size:0.9rem;display:block;margin-bottom:0.4rem;">Root-Cause Attack Graphing</strong>
+            <p style="font-size:0.78rem;color:var(--text-sec);">Correlate endpoint process trees with network flows to reconstruct the exact intrusion entry point.</p>
+          </div>
+          <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;">
+            <div style="color:#00ff9d;font-size:0.8rem;font-weight:700;margin-bottom:0.4rem;">PHASE 3 · COMING SOON</div>
+            <strong style="color:var(--text-primary);font-size:0.9rem;display:block;margin-bottom:0.4rem;">Zero-Touch SOAR Containment</strong>
+            <p style="font-size:0.78rem;color:var(--text-sec);">1-Click host isolation, firewall policy updates, and Active Directory user containment.</p>
+          </div>
+        </div>
 
-      <!-- Quick Action Buttons -->
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="showTab('siem')">⚡ Inspect SIEM Hunting Queries</button>
-        <button class="btn btn-outline" onclick="showTab('playbook')">📋 Export Full Incident Ticket</button>
-        <button class="btn btn-ghost" onclick="SOCKillerFeatures.openFeedbackModal()">💬 Send Feedback to Founder</button>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+          <button class="btn btn-primary" onclick="showTab('siem')">⚡ Use SIEM Queries (Live & Ready)</button>
+          <button class="btn btn-outline" onclick="showTab('playbook')">📋 View Incident Playbook</button>
+          <button class="btn btn-ghost" onclick="SOCKillerFeatures.openFeedbackModal()" style="color:#ff7f00;border-color:rgba(255,127,0,0.3);">
+            💬 Suggest Features for Neon AI
+          </button>
+        </div>
       </div>
     </div>
   `;
